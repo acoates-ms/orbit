@@ -1,0 +1,23 @@
+diff --git a/node_modules/expo/build/Expo.fx.js b/node_modules/expo/build/Expo.fx.js
+index f653e1a..774f82d 100644
+--- a/node_modules/expo/build/Expo.fx.js
++++ b/node_modules/expo/build/Expo.fx.js
+@@ -1,14 +1,16 @@
+ // load expo-asset immediately to set a custom `source` transformer in React Native
+ import './winter';
+ import 'expo-asset';
+-import * as Font from 'expo-font';
+-import { StyleSheet } from 'react-native';
++// import * as Font from 'expo-font';
++// import { StyleSheet } from 'react-native';
+ import { isRunningInExpoGo } from './environment/ExpoGo';
+ import { createErrorHandler } from './errors/ExpoErrorManager';
+ // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
++/*
+ if (StyleSheet.setStyleAttributePreprocessor) {
+     StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+ }
++*/
+ if (isRunningInExpoGo()) {
+     // set up some improvements to commonly logged error messages stemming from react-native
+     const globalHandler = ErrorUtils.getGlobalHandler();

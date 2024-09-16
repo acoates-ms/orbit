@@ -1,0 +1,27 @@
+diff --git a/node_modules/react-native-mmkv/lib/module/createMMKV.js b/node_modules/react-native-mmkv/lib/module/createMMKV.js
+index 644840d..fe99942 100644
+--- a/node_modules/react-native-mmkv/lib/module/createMMKV.js
++++ b/node_modules/react-native-mmkv/lib/module/createMMKV.js
+@@ -1,11 +1,11 @@
+-import { NativeModules, Platform } from 'react-native';
++import { TurboModuleRegistry, Platform } from 'react-native';
+ // Root directory of all MMKV stores
+ const ROOT_DIRECTORY = null;
+ export const createMMKV = config => {
+   // Check if the constructor exists. If not, try installing the JSI bindings.
+   if (global.mmkvCreateNewInstance == null) {
+     // Get the native MMKV ReactModule
+-    const MMKVModule = NativeModules.MMKV;
++    const MMKVModule = TurboModuleRegistry.get('MMKV');
+     if (MMKVModule == null) {
+       var _NativeModules$Native, _NativeModules$Native2;
+       let message = 'Failed to create a new MMKV instance: The native MMKV Module could not be found.';
+@@ -17,7 +17,7 @@ export const createMMKV = config => {
+         message += '\n* Make sure gradle is synced.';
+       }
+       // check if Expo
+-      const ExpoConstants = (_NativeModules$Native = NativeModules.NativeUnimoduleProxy) === null || _NativeModules$Native === void 0 ? void 0 : (_NativeModules$Native2 = _NativeModules$Native.modulesConstants) === null || _NativeModules$Native2 === void 0 ? void 0 : _NativeModules$Native2.ExponentConstants;
++      const ExpoConstants = (_NativeModules$Native = TurboModuleRegistry.get('NativeUnimoduleProxy')) === null || _NativeModules$Native === void 0 ? void 0 : (_NativeModules$Native2 = _NativeModules$Native.modulesConstants) === null || _NativeModules$Native2 === void 0 ? void 0 : _NativeModules$Native2.ExponentConstants;
+       if (ExpoConstants != null) {
+         if (ExpoConstants.appOwnership === 'expo') {
+           // We're running Expo Go

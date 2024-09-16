@@ -1,0 +1,16 @@
+diff --git a/node_modules/react-native-url-polyfill/js/URL.js b/node_modules/react-native-url-polyfill/js/URL.js
+index 720fcff..c8d6cd8 100644
+--- a/node_modules/react-native-url-polyfill/js/URL.js
++++ b/node_modules/react-native-url-polyfill/js/URL.js
+@@ -1,9 +1,9 @@
+-import {NativeModules} from 'react-native';
++import {TurboModuleRegistry} from 'react-native';
+ import {URL as whatwgUrl} from 'whatwg-url-without-unicode';
+ 
+ let BLOB_URL_PREFIX = null;
+ 
+-const {BlobModule} = NativeModules;
++const BlobModule = TurboModuleRegistry.get('BlobModule');
+ 
+ if (BlobModule && typeof BlobModule.BLOB_URI_SCHEME === 'string') {
+   BLOB_URL_PREFIX = BlobModule.BLOB_URI_SCHEME + ':';

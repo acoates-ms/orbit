@@ -1,5 +1,6 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
@@ -15,6 +16,12 @@ module.exports = {
   watchFolders: [workspaceRoot],
   resolver: {
     ...config.resolver,
+    blockList: exclusionList([
+      // This stops "react-native run-windows" from causing the metro server to crash if its already running
+      new RegExp(
+        `${path.resolve(__dirname, 'windows').replace(/[/\\]/g, '/')}.*`,
+      ),
+    ]),
     disableHierarchicalLookup: true,
     nodeModulesPaths: [
       path.resolve(projectRoot, 'node_modules'),
@@ -29,6 +36,13 @@ module.exports = {
         (moduleName === 'react-native' || moduleName.startsWith('react-native/'))
       ) {
         const newModuleName = moduleName.replace('react-native', 'react-native-macos');
+        return context.resolveRequest(context, newModuleName, platform);
+      }
+      if (
+        platform === 'windows' &&
+        (moduleName === 'react-native' || moduleName.startsWith('react-native/'))
+      ) {
+        const newModuleName = moduleName.replace('react-native', 'react-native-windows');
         return context.resolveRequest(context, newModuleName, platform);
       }
       return context.resolveRequest(context, moduleName, platform);
@@ -50,6 +64,7 @@ module.exports = {
       return [
         require.resolve('react-native/Libraries/Core/InitializeCore'),
         require.resolve('react-native-macos/Libraries/Core/InitializeCore'),
+        require.resolve('react-native-windows/Libraries/Core/InitializeCore'),
         ...config.serializer.getModulesRunBeforeMainModule(),
       ];
     },

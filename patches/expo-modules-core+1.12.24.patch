@@ -1,0 +1,70 @@
+diff --git a/node_modules/expo-modules-core/build/NativeModulesProxy.windows.js b/node_modules/expo-modules-core/build/NativeModulesProxy.windows.js
+new file mode 100644
+index 0000000..36cb8af
+--- /dev/null
++++ b/node_modules/expo-modules-core/build/NativeModulesProxy.windows.js
+@@ -0,0 +1,7 @@
++// We default to an empty object shim wherever we don't have an environment-specific implementation
++/**
++ * @deprecated `NativeModulesProxy` is deprecated and might be removed in the future releases.
++ * Use `requireNativeModule` or `requireOptionalNativeModule` instead.
++ */
++export default {};
++//# sourceMappingURL=NativeModulesProxy.js.map
+\ No newline at end of file
+diff --git a/node_modules/expo-modules-core/build/ensureNativeModulesAreInstalled.js b/node_modules/expo-modules-core/build/ensureNativeModulesAreInstalled.js
+index da5233a..f03f37e 100644
+--- a/node_modules/expo-modules-core/build/ensureNativeModulesAreInstalled.js
++++ b/node_modules/expo-modules-core/build/ensureNativeModulesAreInstalled.js
+@@ -1,4 +1,4 @@
+-import { NativeModules, Platform } from 'react-native';
++import { TurboModuleRegistry, Platform } from 'react-native';
+ /**
+  * Ensures that the native modules are installed in the current runtime.
+  * Otherwise, it synchronously calls a native function that installs them.
+@@ -16,7 +16,7 @@ export function ensureNativeModulesAreInstalled() {
+             // TODO: ExpoModulesCore shouldn't be optional here,
+             // but to keep backwards compatibility let's just ignore it in SDK 50.
+             // In most cases the modules were already installed from the native side.
+-            NativeModules.ExpoModulesCore?.installModules();
++            TurboModuleRegistry.get('ExpoModulesCore')?.installModules();
+         }
+     }
+     catch (error) {
+diff --git a/node_modules/expo-modules-core/build/requireNativeModule.js b/node_modules/expo-modules-core/build/requireNativeModule.js
+index d9bc9db..0bc4cae 100644
+--- a/node_modules/expo-modules-core/build/requireNativeModule.js
++++ b/node_modules/expo-modules-core/build/requireNativeModule.js
+@@ -1,4 +1,5 @@
+ import NativeModulesProxy from './NativeModulesProxy';
++import { TurboModuleRegistry } from 'react-native';
+ import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
+ /**
+  * Imports the native module registered with given name. In the first place it tries to load
+@@ -25,6 +26,6 @@ export function requireNativeModule(moduleName) {
+  */
+ export function requireOptionalNativeModule(moduleName) {
+     ensureNativeModulesAreInstalled();
+-    return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
++    return globalThis.expo?.modules?.[moduleName] ?? TurboModuleRegistry.get(moduleName);[moduleName];
+ }
+ //# sourceMappingURL=requireNativeModule.js.map
+\ No newline at end of file
+diff --git a/node_modules/expo-modules-core/src/requireNativeModule.ts b/node_modules/expo-modules-core/src/requireNativeModule.ts
+index 4aa412b..ae95fbe 100644
+--- a/node_modules/expo-modules-core/src/requireNativeModule.ts
++++ b/node_modules/expo-modules-core/src/requireNativeModule.ts
+@@ -1,5 +1,6 @@
+ import NativeModulesProxy from './NativeModulesProxy';
+ import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
++import { TurboModuleRegistry } from 'react-native';
+ 
+ /**
+  * Imports the native module registered with given name. In the first place it tries to load
+@@ -31,5 +32,5 @@ export function requireOptionalNativeModule<ModuleType = any>(
+ ): ModuleType | null {
+   ensureNativeModulesAreInstalled();
+ 
+-  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
++  return globalThis.expo?.modules?.[moduleName] ?? TurboModuleRegistry.get('moduleName');
+ }

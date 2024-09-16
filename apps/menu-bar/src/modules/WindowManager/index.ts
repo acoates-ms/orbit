@@ -1,4 +1,4 @@
-import { AppRegistry, NativeModules } from 'react-native';
+import { AppRegistry, TurboModuleRegistry } from 'react-native';
 
 import { withWindowProvider } from './WindowProvider';
 import { WindowOptions, WindowStyleMask, WindowsConfig, WindowsManagerType } from './types';
@@ -15,8 +15,8 @@ type NativeWindowOptions = Omit<WindowOptions, 'windowStyle'> & {
 type NativeWindowsManagerType = WindowsManagerType & {
   openWindow: (window: string, options: NativeWindowOptions) => Promise<void>;
 };
-const WindowsManager: NativeWindowsManagerType = NativeModules.WindowsManager;
-const WindowsManagerConstants = NativeModules.WindowsManager.getConstants();
+const WindowsManager: NativeWindowsManagerType = TurboModuleRegistry.get('WindowsManager');
+const WindowsManagerConstants = WindowsManager.getConstants();
 
 function getWindowStyleMaskValue(mask: WindowStyleMask) {
   switch (mask) {

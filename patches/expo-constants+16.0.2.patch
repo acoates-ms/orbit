@@ -1,0 +1,26 @@
+diff --git a/node_modules/expo-constants/build/Constants.js b/node_modules/expo-constants/build/Constants.js
+index d14277e..43235a5 100644
+--- a/node_modules/expo-constants/build/Constants.js
++++ b/node_modules/expo-constants/build/Constants.js
+@@ -1,5 +1,5 @@
+ import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
+-import { Platform, NativeModules } from 'react-native';
++import { Platform, TurboModuleRegistry } from 'react-native';
+ import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
+ import ExponentConstants from './ExponentConstants';
+ export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
+@@ -23,10 +23,11 @@ if (ExpoUpdates) {
+ }
+ // If dev-launcher defines a non-empty manifest, prefer that one
+ let rawDevLauncherManifest = null;
+-if (NativeModules.EXDevLauncher) {
++if (TurboModuleRegistry.get('EXDevLauncher')) {
+     let devLauncherManifest;
+-    if (NativeModules.EXDevLauncher.manifestString) {
+-        devLauncherManifest = JSON.parse(NativeModules.EXDevLauncher.manifestString);
++    let devLauncherConstants = TurboModuleRegistry.get('EXDevLauncher').getConstants();
++    if (devLauncherConstants.manifestString) {
++        devLauncherManifest = JSON.parse(devLauncherConstants.manifestString);
+     }
+     if (devLauncherManifest && Object.keys(devLauncherManifest).length > 0) {
+         rawDevLauncherManifest = devLauncherManifest;

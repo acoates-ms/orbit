@@ -1,11 +1,12 @@
-import { NativeModule, NativeModules } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
+import type { NativeModule } from 'react-native';
 
 type FilePickerModuleType = NativeModule & {
   pickFileWithFilenameExtension: (extensions: string[], prompt?: string) => Promise<string>;
   pickFolder: () => Promise<string>;
 };
 
-const FilePickerModule: FilePickerModuleType = NativeModules.FilePicker;
+const FilePickerModule: FilePickerModuleType = TurboModuleRegistry.get('FilePicker');
 
 export default {
   ...FilePickerModule,
