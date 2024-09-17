@@ -106,6 +106,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\modules\auto-updater\windows\AutoUpdaterModule.cpp" />
+    <ClCompile Include="..\..\modules\file-picker\windows\FilePickerModule.cpp" />
+    <ClCompile Include="..\..\modules\menu-bar\windows\MenuBarModule.cpp" />
+    <ClCompile Include="..\..\modules\web-authentication-session\windows\WebAuthenticationSessionModule.cpp" />
     <ClCompile Include="orbit.cpp" />
     <ClCompile Include="AutolinkedNativeModules.g.cpp" />
     <ClCompile Include="pch.cpp">

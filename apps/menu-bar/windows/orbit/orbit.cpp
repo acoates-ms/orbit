@@ -11,61 +11,62 @@
 
 #include "NativeModules.h"
 
-REACT_MODULE(FilePicker)
-struct FilePicker
-{
-    REACT_METHOD(pickFolder)
-    void pickFolder(winrt::Microsoft::ReactNative::ReactPromise<std::string> && result) noexcept
-    {
-        result.Reject("No impl");
-    }
-
-    REACT_METHOD(pickFileWithFilenameExtension)
-    void pickFileWithFilenameExtension(const std::vector<std::string>& filenameExtensions, const std::string& prompt, winrt::Microsoft::ReactNative::ReactPromise<std::string>&& result) noexcept
-    {
-        result.Reject("No impl");
-    }
-};
-
-REACT_MODULE(MenuBar)
-struct MenuBar
-{
-    REACT_METHOD(exitApp)
-    void exitApp() noexcept
-    {
-        assert(false);
-    }
-    // TODO add more methods
-};
-
+#include <winrt/Windows.ApplicationModel.DataTransfer.h>
+#include <winrt/Windows.Foundation.h>
 
 REACT_MODULE(RNCClipboard)
 struct RNCClipboard
 {
-    REACT_METHOD(copy) // TODO not actual methods
-        void copy() noexcept
+    REACT_INIT(Initialize);
+    void Initialize(const winrt::Microsoft::ReactNative::ReactContext& reactContext) noexcept
     {
-        assert(false);
-    }
-    // TODO add more methods
-};
-
-REACT_MODULE(AutoUpdater)
-struct AutoUpdater
-{
-    REACT_METHOD(checkForUpdates)
-    void checkForUpdates() noexcept { }
-
-    REACT_METHOD(getAutomaticallyChecksForUpdates)
-        void getAutomaticallyChecksForUpdates(winrt::Microsoft::ReactNative::ReactPromise<bool>&& result) noexcept
-    {
-        result.Resolve(false);
+        m_context = reactContext;
     }
 
-    REACT_METHOD(setAutomaticallyChecksForUpdates)
-        void setAutomaticallyChecksForUpdates() noexcept
+    REACT_METHOD(getString);
+    void getString(React::ReactPromise<std::string>&& result) noexcept
+    {
+        auto dataPackageView = winrt::Windows::ApplicationModel::DataTransfer::Clipboard::GetContent();
+        if (dataPackageView.Contains(winrt::Windows::ApplicationModel::DataTransfer::StandardDataFormats::Text()))
+        {
+            dataPackageView.GetTextAsync().Completed([result, dataPackageView](winrt::Windows::Foundation::IAsyncOperation<winrt::hstring> info, winrt::Windows::Foundation::AsyncStatus status)
+            {
+                if (status == winrt::Windows::Foundation::AsyncStatus::Completed)
+                {
+                    auto text = winrt::to_string(info.GetResults());
+                    result.Resolve(text);
+                }
+                else
+                {
+                    result.Reject("Failure");
+                }
+            });
+            return;
+        }
+        result.Resolve("");
+    }
+
+    REACT_METHOD(setString)
+    void setString(std::string const& str) noexcept
+    {
+        m_context.UIDispatcher().Post([str]()
+        {
+            winrt::Windows::ApplicationModel::DataTransfer::DataPackage dataPackage {};
+            dataPackage.SetText(winrt::to_hstring(str));
+            winrt::Windows::ApplicationModel::DataTransfer::Clipboard::SetContent(dataPackage);
+        });
+    }
+
+    REACT_METHOD(addListener)
+    void addListener(std::string const&) noexcept { }
+
+    REACT_METHOD(removeListeners)
+        void removeListeners(int) noexcept
     {
     }
+
+private:
+    winrt::Microsoft::ReactNative::ReactContext m_context;
 };
 
 REACT_STRUCT(WindowsManagerConstants)
@@ -130,7 +131,7 @@ struct CompReactPackageProvider
 };
 
 // Global Variables:
-constexpr PCWSTR windowTitle = L"ExpoMenuBar";
+constexpr PCWSTR windowTitle = L"Orbit";
 constexpr PCWSTR mainComponentName = L"Settings";
 
 float ScaleFactor(HWND hwnd) noexcept {
