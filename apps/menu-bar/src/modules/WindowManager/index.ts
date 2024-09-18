@@ -1,4 +1,4 @@
-import { AppRegistry, TurboModuleRegistry } from 'react-native';
+import { AppRegistry, TurboModuleRegistry, Platform } from 'react-native';
 
 import { withWindowProvider } from './WindowProvider';
 import { WindowOptions, WindowStyleMask, WindowsConfig, WindowsManagerType } from './types';
@@ -63,6 +63,13 @@ function convertOptionsToNative(options?: WindowOptions): NativeWindowOptions {
       mask: convertMaskArrayToBitwiseOR(options.windowStyle.mask),
     },
   };
+}
+
+if (Platform.OS === 'windows') {
+  // Override default root view style to remove default flex that causes UI to not size properly.
+  AppRegistry.setRootViewStyleProvider((appParameters: any) => {
+    return {};
+  });
 }
 
 export function createWindowsNavigator<T extends WindowsConfig>(config: T) {

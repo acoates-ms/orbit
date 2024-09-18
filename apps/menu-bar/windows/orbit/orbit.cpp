@@ -9,8 +9,13 @@
 
 #include "AutolinkedNativeModules.g.h"
 
+#include "commctrl.h"
+#include "shellapi.h"
 #include "NativeModules.h"
+#include "strsafe.h"
+#include "windowsx.h"
 
+#include <winrt/Microsoft.UI.interop.h>
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.Foundation.h>
 
@@ -239,6 +244,208 @@ winrt::Microsoft::ReactNative::ReactNativeHost CreateReactNativeHost(
   return host;
 }
 
+constexpr auto WindowDataProperty = L"WindowData";
+struct WindowData
+{
+    static HINSTANCE s_instance;
+
+    winrt::Microsoft::ReactNative::ReactNativeIsland m_compRootView { nullptr };
+    winrt::Microsoft::UI::Content::DesktopChildSiteBridge m_bridge { nullptr };
+    winrt::Microsoft::ReactNative::ReactInstanceSettings m_instanceSettings { nullptr };
+    LONG m_height { 0 };
+    LONG m_width { 0 };
+
+    WindowData()
+    {
+    }
+
+    static WindowData* GetFromWindow(HWND hwnd)
+    {
+        auto data = reinterpret_cast<WindowData*>(GetProp(hwnd, WindowDataProperty));
+        return data;
+    }
+};
+
+
+extern "C" IMAGE_DOS_HEADER __ImageBase;
+HINSTANCE WindowData::s_instance = reinterpret_cast<HINSTANCE>(&__ImageBase);
+UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;
+HWND g_hwnd;
+winrt::Microsoft::ReactNative::ReactNativeHost g_host { nullptr };
+
+BOOL AddNotificationIcon(HWND hwnd)
+{
+    NOTIFYICONDATA nid;
+    nid.cbSize = sizeof(nid);
+    nid.hWnd = hwnd;
+    nid.uCallbackMessage = WMAPP_NOTIFYCALLBACK;
+    nid.uFlags = NIF_ICON | NIF_TIP | NIF_GUID | NIF_SHOWTIP | NIF_MESSAGE;
+
+    static const GUID myGUID =
+    { 0x092BFDBB, 0x56CB, 0x47AD, {0xA7, 0xA0, 0xB9, 0xE1, 0x38, 0xC9, 0x3A, 0xC8} };
+    nid.guidItem = myGUID;
+
+    StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Expo Orbit");
+
+    // Not sure why this is causing an error
+    //LoadIconMetric(instance, MAKEINTRESOURCEW(IDI_ICON1), LIM_LARGE, &(nid.hIcon));
+
+    Shell_NotifyIcon(NIM_ADD, &nid);
+
+    nid.uVersion = NOTIFYICON_VERSION_4;
+    return Shell_NotifyIcon(NIM_SETVERSION, &nid);
+}
+
+void ApplyConstraintsForContentSizedWindow(winrt::Microsoft::ReactNative::LayoutConstraints& constraints)
+{
+    constraints.MinimumSize = { 500, 500 };
+    constraints.MaximumSize = { 1000, 1000 };
+}
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) noexcept
+{
+    auto windowData = WindowData::GetFromWindow(hwnd);
+
+    switch (message)
+    {
+    case WM_CREATE:
+    {
+        AddNotificationIcon(hwnd);
+        break;
+    }
+        /*
+    case WM_COMMAND: {
+        return WindowData::GetFromWindow(hwnd)->OnCommand(
+            hwnd, LOWORD(wparam), reinterpret_cast<HWND>(lparam), HIWORD(wparam));
+
+    }
+    */
+    case WM_DESTROY: {
+        auto data = WindowData::GetFromWindow(hwnd);
+        // Before we shutdown the application - gracefully unload the ReactNativeHost instance
+        bool shouldPostQuitMessage = true;
+        if (g_host)
+        {
+            shouldPostQuitMessage = false;
+
+            auto async = g_host.UnloadInstance();
+            async.Completed([](auto asyncInfo, winrt::Windows::Foundation::AsyncStatus asyncStatus)
+            {
+                assert(asyncStatus == winrt::Windows::Foundation::AsyncStatus::Completed);
+                g_host.InstanceSettings().UIDispatcher().Post([]()
+                {
+                    PostQuitMessage(0);
+                });
+            });
+            data->m_compRootView = nullptr;
+            data->m_instanceSettings = nullptr;
+        }
+
+        delete WindowData::GetFromWindow(hwnd);
+        SetProp(hwnd, WindowDataProperty, 0);
+        if (shouldPostQuitMessage)
+        {
+            PostQuitMessage(0);
+        }
+        return 0;
+    }
+    case WM_NCCREATE: {
+        auto cs = reinterpret_cast<CREATESTRUCT*>(lparam);
+        auto windowData = static_cast<WindowData*>(cs->lpCreateParams);
+        WINRT_ASSERT(windowData);
+        SetProp(hwnd, WindowDataProperty, reinterpret_cast<HANDLE>(windowData));
+        break;
+    }
+    case WM_WINDOWPOSCHANGED: {
+        auto windowData = WindowData::GetFromWindow(hwnd);
+        RECT rc;
+        if (GetClientRect(hwnd, &rc))
+        {
+            if (windowData->m_height != (rc.bottom - rc.top) || windowData->m_width != (rc.right - rc.left))
+            {
+                windowData->m_height = rc.bottom - rc.top;
+                windowData->m_width = rc.right - rc.left;
+
+                if (windowData->m_compRootView)
+                {
+                    winrt::Windows::Foundation::Size size { windowData->m_width / ScaleFactor(hwnd), windowData->m_height / ScaleFactor(hwnd) };
+                    if (!IsIconic(hwnd))
+                    {
+                        winrt::Microsoft::ReactNative::LayoutConstraints constraints;
+                        constraints.LayoutDirection = winrt::Microsoft::ReactNative::LayoutDirection::LeftToRight;
+                        ApplyConstraintsForContentSizedWindow(constraints);
+                        windowData->m_compRootView.Arrange(constraints, { 0, 0 });
+                    }
+                }
+            }
+        }
+
+        break;
+    }
+
+    case WMAPP_NOTIFYCALLBACK:
+        switch (LOWORD(lparam))
+        {
+        case NIN_SELECT:
+            // for NOTIFYICON_VERSION_4 clients, NIN_SELECT is prerable to listening to mouse clicks and key presses
+            // directly.
+            if (IsWindowVisible(g_hwnd))
+            {
+                auto x = GET_X_LPARAM(wparam);
+                auto y = GET_Y_LPARAM(wparam);
+
+                ShowWindow(g_hwnd, SW_HIDE);
+            }
+            else
+            {
+
+                ShowWindow(g_hwnd, SW_SHOW);
+                UpdateWindow(g_hwnd);
+                SetFocus(g_hwnd);
+            }
+            break;
+
+            /*
+        case NIN_BALLOONTIMEOUT:
+            RestoreTooltip();
+            break;
+            */
+            /*
+        case NIN_BALLOONUSERCLICK:
+            RestoreTooltip();
+            // placeholder for the user clicking on the balloon.
+            MessageBox(hwnd, L"The user clicked on the balloon.", L"User click", MB_OK);
+            break;
+            */
+
+            /*
+        case WM_CONTEXTMENU:
+        {
+            POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
+            ShowContextMenu(hwnd, pt);
+        }
+        */
+        break;
+        }
+        break;
+
+
+                    /*
+    case WM_WINDOWPOSCHANGED: {
+        auto windowData = WindowData::GetFromWindow(hwnd);
+        windowData->UpdateSize(hwnd);
+
+        winrt::Microsoft::ReactNative::ReactNotificationService rns(windowData->InstanceSettings().Notifications());
+        winrt::Microsoft::ReactNative::ForwardWindowMessage(rns, hwnd, message, wparam, lparam);
+        break;
+    }
+    */
+    }
+    return DefWindowProc(hwnd, message, wparam, lparam);
+}
+
+constexpr PCWSTR c_windowClassName = L"EXPO_ORBIT_WINDOW_CLASS";
+
 _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR /* commandLine */, int showCmd) {
   // Initialize WinRT.
   winrt::init_apartment(winrt::apartment_type::single_threaded);
@@ -253,57 +460,84 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
   // Create a Compositor for all Content on this thread.
   auto compositor{winrt::Microsoft::UI::Composition::Compositor()};
 
-  // Create a top-level window.
-  auto window = winrt::Microsoft::UI::Windowing::AppWindow::Create();
-  window.Title(windowTitle);
-  window.Resize({1000, 1000});
-  window.Show();
-  auto hwnd = winrt::Microsoft::UI::GetWindowFromWindowId(window.Id());
-  auto scaleFactor = ScaleFactor(hwnd);
+  constexpr PCWSTR appName = L"Expo Orbit";
 
-  auto host = CreateReactNativeHost(hwnd, compositor);
+  WNDCLASSEXW wcex = {0};
+  wcex.cbSize = sizeof(WNDCLASSEX);
+  wcex.style = CS_HREDRAW | CS_VREDRAW;
+  wcex.lpfnWndProc = &WndProc;
+  wcex.cbClsExtra = DLGWINDOWEXTRA;
+  wcex.cbWndExtra = sizeof(WindowData*);
+  wcex.hInstance = WindowData::s_instance;
+  wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+  wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+  wcex.lpszClassName = c_windowClassName;
+  wcex.hIcon = LoadIconW(instance, MAKEINTRESOURCEW(IDI_ICON1));
+  ATOM classId = RegisterClassEx(&wcex);
+  WINRT_VERIFY(classId);
+  winrt::check_win32(!classId);
+
+  auto windowData = std::make_unique<WindowData>();
+  g_hwnd = CreateWindow(
+      c_windowClassName,
+      appName,
+      WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT,
+      CW_USEDEFAULT,
+      CW_USEDEFAULT,
+      CW_USEDEFAULT,
+      nullptr,
+      nullptr,
+      WindowData::s_instance,
+      windowData.get());
+
+
+  WINRT_VERIFY(g_hwnd);
+
+  g_host = CreateReactNativeHost(g_hwnd, compositor);
 
   // Start the react-native instance, which will create a JavaScript runtime and load the applications bundle
-  host.ReloadInstance();
+  g_host.ReloadInstance();
 
   // Create a RootView which will present a react-native component
   winrt::Microsoft::ReactNative::ReactViewOptions viewOptions;
   viewOptions.ComponentName(mainComponentName);
-  auto rootView = winrt::Microsoft::ReactNative::ReactNativeIsland(compositor);
-  rootView.ReactViewHost(winrt::Microsoft::ReactNative::ReactCoreInjection::MakeViewHost(host, viewOptions));
-
-  // Update the size of the RootView when the AppWindow changes size
-  window.Changed([wkRootView = winrt::make_weak(rootView)](
-                     winrt::Microsoft::UI::Windowing::AppWindow const &window,
-                     winrt::Microsoft::UI::Windowing::AppWindowChangedEventArgs const &args) {
-    if (args.DidSizeChange() || args.DidVisibilityChange()) {
-      if (auto rootView = wkRootView.get()) {
-        UpdateRootViewSizeToAppWindow(rootView, window);
-      }
-    }
-  });
-
-  // Quit application when main window is closed
-  window.Destroying(
-      [host](winrt::Microsoft::UI::Windowing::AppWindow const &window, winrt::IInspectable const & /*args*/) {
-        // Before we shutdown the application - unload the ReactNativeHost to give the javascript a chance to save any
-        // state
-        auto async = host.UnloadInstance();
-        async.Completed([host](auto asyncInfo, winrt::Windows::Foundation::AsyncStatus asyncStatus) {
-          assert(asyncStatus == winrt::Windows::Foundation::AsyncStatus::Completed);
-          host.InstanceSettings().UIDispatcher().Post([]() { PostQuitMessage(0); });
-        });
-      });
+  windowData->m_compRootView = winrt::Microsoft::ReactNative::ReactNativeIsland(compositor);
+  windowData->m_compRootView.ReactViewHost(winrt::Microsoft::ReactNative::ReactCoreInjection::MakeViewHost(g_host, viewOptions));
 
   // DesktopChildSiteBridge create a ContentSite that can host the RootView ContentIsland
-  auto bridge = winrt::Microsoft::UI::Content::DesktopChildSiteBridge::Create(compositor, window.Id());
-  bridge.Connect(rootView.Island());
+  auto bridge = winrt::Microsoft::UI::Content::DesktopChildSiteBridge::Create(compositor, winrt::Microsoft::UI::GetWindowIdFromWindow(g_hwnd));
+  bridge.Connect(windowData->m_compRootView.Island());
   bridge.ResizePolicy(winrt::Microsoft::UI::Content::ContentSizePolicy::ResizeContentToParentWindow);
+  
+  windowData->m_compRootView.ScaleFactor(ScaleFactor(g_hwnd));
+  winrt::Microsoft::ReactNative::LayoutConstraints constraints;
+  constraints.LayoutDirection = winrt::Microsoft::ReactNative::LayoutDirection::LeftToRight;
+  ApplyConstraintsForContentSizedWindow(constraints);
 
-  rootView.ScaleFactor(scaleFactor);
+  // Disable user sizing of the hwnd
+  ::SetWindowLong(g_hwnd, GWL_STYLE, GetWindowLong(g_hwnd, GWL_STYLE) & ~WS_SIZEBOX);
+  windowData->m_compRootView.SizeChanged(
+      [](auto sender, const winrt::Microsoft::ReactNative::RootViewSizeChangedEventArgs& args)
+  {
+      RECT rcClient, rcWindow;
+      GetClientRect(g_hwnd, &rcClient);
+      GetWindowRect(g_hwnd, &rcWindow);
 
-  // Set the intialSize of the root view
-  UpdateRootViewSizeToAppWindow(rootView, window);
+      SetWindowPos(
+          g_hwnd,
+          nullptr,
+          0,
+          0,
+          static_cast<int>(args.Size().Width) + rcClient.left - rcClient.right + rcWindow.right -
+          rcWindow.left,
+          static_cast<int>(args.Size().Height) + rcClient.top - rcClient.bottom + rcWindow.bottom -
+          rcWindow.top,
+          SWP_DEFERERASE | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+  });
+
+  windowData->m_compRootView.Arrange(constraints, { 0, 0 });
+  windowData.release();
 
   bridge.Show();
 

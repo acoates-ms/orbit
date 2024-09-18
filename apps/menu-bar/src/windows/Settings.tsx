@@ -177,9 +177,12 @@ const Settings = () => {
         : addOpacity(darkTheme.background.default, 0.2),
   };
 
+  // Avoiding a flex at the root to allow container to properly size the window
+  const flex = Platform.select({windows: 0, default: 1});
+
   return (
-    <View flex="1" px="medium" pb="medium">
-      <View flex="1">
+    <View flex={flex} px="medium" pb="medium">
+      <View flex={flex}>
         <View mb="3">
           <Text size="medium" weight="semibold" style={[headerStyle, styles.headerSpacing]}>
             Account
