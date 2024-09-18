@@ -1,13 +1,15 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Platform } from 'react-native';
 
 import { View, Text } from '../components';
 import NativeColorPalette from '../components/NativeColorPalette';
 import MenuBarModule from '../modules/MenuBarModule';
 import { resetApolloStore, resetStorage } from '../modules/Storage';
 
+const flex = Platform.select({windows: 0, default: 1});
+
 const DebugMenu = () => {
   return (
-    <View flex="1" px="medium" pb="medium" padding="2" gap="1.5">
+    <View flex={flex} px="medium" pb="medium" padding="2" gap="1.5">
       <TouchableOpacity onPress={resetStorage}>
         <Text color="warning">Reset storage</Text>
       </TouchableOpacity>
