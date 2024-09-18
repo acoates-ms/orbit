@@ -124,6 +124,7 @@ struct WindowData
 	LONG m_height { 0 };
 	LONG m_width { 0 };
 	winrt::hstring m_componentName;
+	winrt::event_token m_firstSizeToken;
 
 	WindowData()
 	{
@@ -173,12 +174,19 @@ struct WindowsManager
 
 			WINRT_VERIFY(hwnd);
 
+			// So not show the window until it has had a chance to get an intial size
+			windowData->m_firstSizeToken = windowData->m_compRootView.SizeChanged(
+				[hwnd](auto sender, const winrt::Microsoft::ReactNative::RootViewSizeChangedEventArgs& args)
+			{
+				auto data = WindowData::GetFromWindow(hwnd);
+				ShowWindow(hwnd, SW_SHOW);
+				UpdateWindow(hwnd);
+				SetFocus(hwnd);
+				data->m_compRootView.SizeChanged(data->m_firstSizeToken);
+			});
+
 			windowData.release();
 
-			ShowWindow(hwnd, SW_SHOW);
-			UpdateWindow(hwnd);
-			SetFocus(hwnd);
-			SetForegroundWindow(hwnd);
 		});
 	}
 
