@@ -343,7 +343,7 @@ BOOL AddNotificationIcon(HWND hwnd)
 
 void ApplyConstraintsForContentSizedWindow(winrt::Microsoft::ReactNative::LayoutConstraints& constraints)
 {
-	constraints.MinimumSize = { 500, 500 };
+	constraints.MinimumSize = { 100, 200 };
 	constraints.MaximumSize = { 1000, 1000 };
 }
 
@@ -374,7 +374,7 @@ void HandleReactNativeWindowMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
 		ApplyConstraintsForContentSizedWindow(constraints);
 
 		// Disable user sizing of the hwnd
-		// ::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SIZEBOX);
+		::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SIZEBOX);
 		data->m_compRootView.SizeChanged(
 			[hwnd](auto sender, const winrt::Microsoft::ReactNative::RootViewSizeChangedEventArgs& args)
 		{
@@ -624,7 +624,7 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
 	// know the message loop has finished.
 	dispatcherQueueController.ShutdownQueue();
 
-	  // Destroy all Composition objects
+	// Destroy all Composition objects
 	g_compositor.Close();
 	g_compositor = nullptr;
 }
