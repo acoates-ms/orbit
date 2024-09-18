@@ -178,6 +178,7 @@ struct WindowsManager
 			ShowWindow(hwnd, SW_SHOW);
 			UpdateWindow(hwnd);
 			SetFocus(hwnd);
+			SetForegroundWindow(hwnd);
 		});
 	}
 
@@ -493,6 +494,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
 		return 0;
 	}
 
+	case WM_CLOSE: {
+		ShowWindow(g_hwnd, SW_HIDE);
+		return 0;
+	}
+
 	case WMAPP_NOTIFYCALLBACK:
 		switch (LOWORD(lparam))
 		{
@@ -509,9 +515,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
 			else
 			{
 
-				ShowWindow(g_hwnd, SW_SHOW);
-				UpdateWindow(g_hwnd);
-				SetFocus(g_hwnd);
+				ShowWindow(hwnd, SW_SHOW);
+				UpdateWindow(hwnd);
+				SetFocus(hwnd);
+				SetForegroundWindow(hwnd);
 			}
 			break;
 
