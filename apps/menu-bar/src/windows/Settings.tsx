@@ -213,16 +213,6 @@ const Settings = () => {
                     </View>
                   </Row>
                 ) : null}
-                {__DEV__ ? (
-                  <TouchableOpacity
-                    onPress={() => WindowsNavigator.open('DebugMenu')}
-                    style={[
-                      styles.debugButton,
-                      getStylesForColor('primary', theme)?.touchableStyle,
-                    ]}>
-                    <SystemIconView systemIconName="ladybug" />
-                  </TouchableOpacity>
-                ) : null}
                 <Button title="Log Out" onPress={handleLogout} style={styles.button} />
               </Row>
             ) : (
@@ -230,16 +220,11 @@ const Settings = () => {
                 <Text style={[styles.flex, { lineHeight: 15 }]} numberOfLines={2} size="tiny">
                   Log in or create an account to access your projects, builds and more.
                 </Text>
-                {__DEV__ ? (
-                  <TouchableOpacity
-                    onPress={() => WindowsNavigator.open('DebugMenu')}
-                    style={[
-                      styles.debugButton,
-                      getStylesForColor('primary', theme)?.touchableStyle,
-                    ]}>
-                    <SystemIconView systemIconName="ladybug" />
-                  </TouchableOpacity>
-                ) : null}
+                <TouchableOpacity
+                  onPress={() => WindowsNavigator.open('DebugMenu')}
+                  style={[styles.debugButton, getStylesForColor('primary', theme)?.touchableStyle]}>
+                  <SystemIconView systemIconName="ladybug" />
+                </TouchableOpacity>
                 <Button
                   title="Sign Up"
                   onPress={() => handleAuthentication('signup')}
@@ -351,14 +336,21 @@ const Settings = () => {
           </View>
         </View>
       </View>
-      <Text color="secondary" size="tiny" align="center">
-        {`Version: ${MenuBarModule.appVersion} ${
-          MenuBarModule.buildVersion ? `(${MenuBarModule.buildVersion})` : ''
-        }`}
-      </Text>
-      <Text color="secondary" size="tiny" align="center">
-        Copyright 650 Industries Inc, 2023
-      </Text>
+      <View>
+        <Text color="secondary" size="tiny" align="center">
+          {`Version: ${MenuBarModule.appVersion} ${
+            MenuBarModule.buildVersion ? `(${MenuBarModule.buildVersion})` : ''
+          }`}
+        </Text>
+        <Text color="secondary" size="tiny" align="center">
+          Copyright 650 Industries Inc, {new Date().getFullYear()}
+        </Text>
+        <TouchableOpacity
+          onPress={() => WindowsNavigator.open('DebugMenu')}
+          style={[styles.debugButton, getStylesForColor('primary', theme)?.touchableStyle]}>
+          <SystemIconView systemIconName="ladybug" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -383,6 +375,9 @@ const styles = StyleSheet.create({
     marginTop: -3,
   },
   debugButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
     height: 32,
     borderRadius: 6,
     paddingHorizontal: 8,

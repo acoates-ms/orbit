@@ -24,8 +24,6 @@
 		C061C7A12A26B21C00A53D8D /* AutoResizerRootViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C061C7A02A26B21C00A53D8D /* AutoResizerRootViewManager.m */; };
 		C061C7A42A26B50200A53D8D /* AutoResizerRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = C061C7A32A26B50200A53D8D /* AutoResizerRootView.m */; };
 		C061C7A82A26DD9A00A53D8D /* SystemIconViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C061C7A72A26DD9A00A53D8D /* SystemIconViewManager.m */; };
-		C06B8F8A2AAA9024009F2BB5 /* FileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = C06B8F892AAA9024009F2BB5 /* FileHandler.m */; };
-		C06B8F8D2AAA9058009F2BB5 /* FileHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C06B8F8C2AAA9058009F2BB5 /* FileHandlerManager.m */; };
 		C06B8F902AAB77D0009F2BB5 /* DragDropStatusItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = C06B8F8F2AAB77D0009F2BB5 /* DragDropStatusItemView.m */; };
 		C081507F2A610E9C00E8890F /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = C081507E2A610E9C00E8890F /* fonts */; };
 		C08E65212A5C411D0079E3A9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08E65202A5C411D0079E3A9 /* AppDelegate.swift */; };
@@ -88,10 +86,6 @@
 		C061C7A62A26DD8C00A53D8D /* SystemIconViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SystemIconViewManager.h; sourceTree = "<group>"; };
 		C061C7A72A26DD9A00A53D8D /* SystemIconViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SystemIconViewManager.m; sourceTree = "<group>"; };
 		C061C7A92A26EDB800A53D8D /* RCTImageView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTImageView+Private.h"; sourceTree = "<group>"; };
-		C06B8F892AAA9024009F2BB5 /* FileHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileHandler.m; sourceTree = "<group>"; };
-		C06B8F8B2AAA9032009F2BB5 /* FileHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileHandler.h; sourceTree = "<group>"; };
-		C06B8F8C2AAA9058009F2BB5 /* FileHandlerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileHandlerManager.m; sourceTree = "<group>"; };
-		C06B8F8E2AAA906A009F2BB5 /* FileHandlerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileHandlerManager.h; sourceTree = "<group>"; };
 		C06B8F8F2AAB77D0009F2BB5 /* DragDropStatusItemView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DragDropStatusItemView.m; sourceTree = "<group>"; };
 		C06B8F912AAB77EC009F2BB5 /* DragDropStatusItemView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DragDropStatusItemView.h; sourceTree = "<group>"; };
 		C081507E2A610E9C00E8890F /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../public/fonts; sourceTree = "<group>"; };
@@ -199,10 +193,6 @@
 				C08E65352A5D0A580079E3A9 /* WindowNavigator.h */,
 				C051EC0D2AA227C600C6D615 /* SwifterWrapper.swift */,
 				C051EC0C2AA227C600C6D615 /* ExpoMenuBar-macOS-Bridging-Header.h */,
-				C06B8F892AAA9024009F2BB5 /* FileHandler.m */,
-				C06B8F8B2AAA9032009F2BB5 /* FileHandler.h */,
-				C06B8F8C2AAA9058009F2BB5 /* FileHandlerManager.m */,
-				C06B8F8E2AAA906A009F2BB5 /* FileHandlerManager.h */,
 				C06B8F8F2AAB77D0009F2BB5 /* DragDropStatusItemView.m */,
 				C06B8F912AAB77EC009F2BB5 /* DragDropStatusItemView.h */,
 				6DF0AD98E1DDDB5E7C991DB8 /* PrivacyInfo.xcprivacy */,
@@ -278,6 +268,7 @@
 			buildConfigurationList = 5142015A2437B4B40078DB4F /* Build configuration list for PBXNativeTarget "ExpoMenuBar-macOS" */;
 			buildPhases = (
 				1A938104A937498D81B3BD3B /* [CP] Check Pods Manifest.lock */,
+				C091563F2D7787B200FC1EB6 /* Archive and sign CLI  */,
 				381D8A6F24576A6C00465D17 /* Start Packager */,
 				63FA8EA00DD165DC6FA0B487 /* [Expo] Configure project */,
 				514201452437B4B30078DB4F /* Sources */,
@@ -415,7 +406,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi \n\nexport PROJECT_ROOT=\"$PODS_ROOT/../../\"\n\npath=\"$($NODE_BINARY --print \"require.resolve('react-native-macos/package.json')\")\"\n$(dirname \"$path\")/scripts/react-native-xcode.sh\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi \n\nexport PROJECT_ROOT=\"$PODS_ROOT/../../\"\n\nif [[ -z \"$ENTRY_FILE\" ]]; then  \n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\npath=\"$($NODE_BINARY --print \"require.resolve('react-native-macos/package.json')\")\"\n$(dirname \"$path\")/scripts/react-native-xcode.sh\n";
 		};
 		381D8A6F24576A6C00465D17 /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -471,6 +462,25 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-ExpoMenuBar-macOS/expo-configure-project.sh\"\n";
 		};
+		C091563F2D7787B200FC1EB6 /* Archive and sign CLI  */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Archive and sign CLI ";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" == \"Release\" ]; then \n    echo \"Archive and signing CLI...\"\n   \"$PODS_ROOT/../\"scripts/archive_cli.sh  \nelse\n    echo \"Skipping archiving CLI\"\nfi\n";
+		};
 		DF76CD60CADE3DD346ABE802 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -497,11 +507,9 @@
 			files = (
 				C0B36EA22A65E25A004F2D8C /* Checkbox.m in Sources */,
 				C061C7A82A26DD9A00A53D8D /* SystemIconViewManager.m in Sources */,
-				C06B8F8A2AAA9024009F2BB5 /* FileHandler.m in Sources */,
 				C0523ED02A55980D003371AF /* WindowWithDeallocCallback.m in Sources */,
 				C06B8F902AAB77D0009F2BB5 /* DragDropStatusItemView.m in Sources */,
 				C0B36EA32A65E25A004F2D8C /* CheckboxManager.m in Sources */,
-				C06B8F8D2AAA9058009F2BB5 /* FileHandlerManager.m in Sources */,
 				C051EC0E2AA227C600C6D615 /* SwifterWrapper.swift in Sources */,
 				C0523ECC2A550983003371AF /* WindowManager.m in Sources */,
 				514201582437B4B40078DB4F /* main.m in Sources */,
@@ -556,10 +564,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -597,10 +602,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -686,7 +688,7 @@
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native-macos";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
-				USE_HERMES = false;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -754,7 +756,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native-macos";
 				SDKROOT = macosx;
-				USE_HERMES = false;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

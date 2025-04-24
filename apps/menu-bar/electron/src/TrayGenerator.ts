@@ -10,6 +10,8 @@ import {
 } from 'electron';
 import path from 'path';
 
+import WindowManager from '../modules/WindowManager/main';
+
 export default class TrayGenerator {
   mainWindow: BrowserWindow;
   tray: Tray | null;
@@ -56,6 +58,20 @@ export default class TrayGenerator {
   };
   rightClickMenu = () => {
     const menu: MenuItemConstructorOptions[] = [
+      {
+        label: 'Settings...',
+        click() {
+          WindowManager.openWindow('Settings', {
+            // Keep in sync with menu-bar/src/windows/index.ts
+            title: 'Settings',
+            windowStyle: {
+              titlebarAppearsTransparent: true,
+              height: 580,
+              width: 500,
+            },
+          });
+        },
+      },
       {
         role: 'quit',
         accelerator: 'Command+Q',
@@ -104,11 +120,15 @@ module.exports = TrayGenerator;
 
 const getIconPath = () => {
   const iconName = getIconName();
-  return path.join(__dirname, `../../assets/images/tray/${iconName}`);
+
+  return path.join(
+    path.dirname(__dirname),
+    `${app.isPackaged ? '../..' : '..'}/assets/images/tray/${iconName}`
+  );
 };
 
 const getIconName = () => {
-  if (process.platform === 'darwin') {
+  if (process.platform === 'darwin' || process.platform === 'linux') {
     return 'icon.png';
   }
 

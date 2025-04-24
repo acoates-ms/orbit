@@ -6,18 +6,79 @@
 
 ### 🎉 New features
 
-- Add experimental support for Windows and Linux. ([#152](https://github.com/expo/orbit/pull/152), [#157](https://github.com/expo/orbit/pull/157), [#158](https://github.com/expo/orbit/pull/158), [#160](https://github.com/expo/orbit/pull/160), [#161](https://github.com/expo/orbit/pull/161), [#165](https://github.com/expo/orbit/pull/165), [#170](https://github.com/expo/orbit/pull/170), [#171](https://github.com/expo/orbit/pull/171), [#172](https://github.com/expo/orbit/pull/172), [#173](https://github.com/expo/orbit/pull/173), [#174](https://github.com/expo/orbit/pull/174), [#175](https://github.com/expo/orbit/pull/175), [#177](https://github.com/expo/orbit/pull/177), [#178](https://github.com/expo/orbit/pull/178), [#180](https://github.com/expo/orbit/pull/180), [#181](https://github.com/expo/orbit/pull/181), [#182](https://github.com/expo/orbit/pull/182), [#185](https://github.com/expo/orbit/pull/185), [#191](https://github.com/expo/orbit/pull/191) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Automatically select the correct iOS device depending on app type. ([#200](https://github.com/expo/orbit/pull/200) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add warning when developer mode is disabled on iOS. ([#250](https://github.com/expo/orbit/pull/250) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+- Add CLI archive build phase to macOS project. ([#248](https://github.com/expo/orbit/pull/248) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add arch info to Rudder module. ([#252](https://github.com/expo/orbit/pull/252) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.0.2 — 2025-02-27
+
+### 🎉 New features
+
+- [Windows] Add settings option to context menu. ([#233](https://github.com/expo/orbit/pull/233) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for opening APK files from Explorer on Windows and Linux. ([#237](https://github.com/expo/orbit/pull/237) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for opening projects directly in Expo Go through a deep link. ([#241](https://github.com/expo/orbit/pull/241) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Upgrade `react-native-macos` to 0.76.6. ([#232](https://github.com/expo/orbit/pull/232) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add tracking simulator launches. ([#246](https://github.com/expo/orbit/pull/246) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.0.1 — 2024-12-03
+
+### 🎉 New features
+
+- Allow users to manually launch updates in Expo Go. ([#226](https://github.com/expo/orbit/pull/226) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Linux] Add support for auto updates. ([#229](https://github.com/expo/orbit/pull/229) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [macOS] Fix `new NativeEventEmitter() requires a non-null argument` error when clicking "See all". ([#225](https://github.com/expo/orbit/pull/225) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Linux] Add maintainer field to deb packages. ([#227](https://github.com/expo/orbit/pull/227) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.0.0 — 2024-11-22
+
+### 🎉 New features
+
+- Add experimental support for Windows and Linux. ([#152](https://github.com/expo/orbit/pull/152), [#157](https://github.com/expo/orbit/pull/157), [#158](https://github.com/expo/orbit/pull/158), [#160](https://github.com/expo/orbit/pull/160), [#161](https://github.com/expo/orbit/pull/161), [#165](https://github.com/expo/orbit/pull/165), [#170](https://github.com/expo/orbit/pull/170), [#171](https://github.com/expo/orbit/pull/171), [#172](https://github.com/expo/orbit/pull/172), [#173](https://github.com/expo/orbit/pull/173), [#174](https://github.com/expo/orbit/pull/174), [#175](https://github.com/expo/orbit/pull/175), [#177](https://github.com/expo/orbit/pull/177), [#178](https://github.com/expo/orbit/pull/178), [#180](https://github.com/expo/orbit/pull/180), [#181](https://github.com/expo/orbit/pull/181), [#182](https://github.com/expo/orbit/pull/182), [#185](https://github.com/expo/orbit/pull/185), [#191](https://github.com/expo/orbit/pull/191), [#220](https://github.com/expo/orbit/pull/220) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Upgrade `react-native` to 0.76.1. ([#217](https://github.com/expo/orbit/pull/217) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade to `expo` SDK 52. ([#217](https://github.com/expo/orbit/pull/217), [#219](https://github.com/expo/orbit/pull/219) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade `react-native-svg` to 15.8.X. ([#217](https://github.com/expo/orbit/pull/217), [#219](https://github.com/expo/orbit/pull/219) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade `electron` to 33.2.0. ([#218](https://github.com/expo/orbit/pull/218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add github workflow to build for Windows and Linux. ([#221](https://github.com/expo/orbit/pull/221) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.2.1 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- Fixed CLI on x64 machines. ([#215](https://github.com/expo/orbit/pull/215) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Show Debug Window in release mode. ([#216](https://github.com/expo/orbit/pull/216) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.2.0 — 2024-11-05
+
+### 🎉 New features
+
+- Automatically select the correct iOS device depending on app type. ([#200](https://github.com/expo/orbit/pull/200) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for self-signed certificates. ([#208](https://github.com/expo/orbit/pull/208) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
 - Update devices order to show physical devices first. ([#197](https://github.com/expo/orbit/pull/197) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Improve listing connected Apple devices over Wi-Fi. ([#199](https://github.com/expo/orbit/pull/199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Upgrade `react-native` to 0.75.2. ([#203](https://github.com/expo/orbit/pull/203) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Upgrade to `expo` SDK 51. ([#204](https://github.com/expo/orbit/pull/204) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade `react-native` to 0.75.2. ([#203](https://github.com/expo/orbit/pull/203), [#209](https://github.com/expo/orbit/pull/209), by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade to `expo` SDK 51. ([#204](https://github.com/expo/orbit/pull/204), [#212](https://github.com/expo/orbit/pull/212) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Upgrade `react-native-svg` to 15.2.0. ([#204](https://github.com/expo/orbit/pull/204) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add debug logs to debug menu. ([#211](https://github.com/expo/orbit/pull/211) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 1.1.1 — 2024-03-15
 

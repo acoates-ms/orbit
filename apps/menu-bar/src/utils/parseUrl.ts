@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { saveSessionSecret } from '../modules/Storage';
 
 export const getPlatformFromURI = (url: string): 'android' | 'ios' => {
@@ -14,18 +16,30 @@ export function handleAuthUrl(url: string) {
 
   saveSessionSecret(sessionSecret);
 }
-
-export function identifyAndParseDeeplinkURL(deeplinkURLString: string): {
-  urlType: URLType;
+type BaseDeeplinkURLType = {
+  urlType: Exclude<URLType, URLType.GO>;
   url: string;
-} {
+};
+
+type GoDeeplinkURLType = {
+  urlType: URLType.GO;
+  url: string;
+  sdkVersion: string | null;
+};
+
+type DeeplinkURLType = BaseDeeplinkURLType | GoDeeplinkURLType;
+
+export function identifyAndParseDeeplinkURL(deeplinkURLString: string): DeeplinkURLType {
   /**
    * The URL implementation when running Jest does not support
    * custom schemes + URLs without domains. That's why we
    * default to http://expo.dev when creating a new URL instance.
    */
   const urlWithoutProtocol = deeplinkURLString.replace(/^[^:]+:\/\//, '');
-  const deeplinkURL = new URL(deeplinkURLString, 'http://expo.dev');
+  const deeplinkURL = new URL(
+    Platform.OS === 'web' ? urlWithoutProtocol : deeplinkURLString,
+    'http://expo.dev'
+  );
   // On web the pathname starts with '///' instead of '/'
   const pathname = deeplinkURL.pathname.replace('///', '/');
 
@@ -44,6 +58,14 @@ export function identifyAndParseDeeplinkURL(deeplinkURLString: string): {
       url: getUrlFromSearchParams(deeplinkURL.searchParams),
     };
   }
+  if (pathname.startsWith('/go')) {
+    return {
+      urlType: URLType.GO,
+      url: getUrlFromSearchParams(deeplinkURL.searchParams),
+      sdkVersion: deeplinkURL.searchParams.get('sdkVersion'),
+    };
+  }
+  // Deprecate in future versions
   if (pathname.startsWith('/snack')) {
     return {
       urlType: URLType.SNACK,
@@ -89,5 +111,6 @@ export enum URLType {
   EXPO_UPDATE = 'EXPO_UPDATE',
   EXPO_BUILD = 'EXPO_BUILD',
   SNACK = 'SNACK',
+  GO = 'GO',
   UNKNOWN = 'UNKNOWN',
 }

@@ -3,6 +3,8 @@
 // Used by orbit.rc
 
 #define IDI_ICON1 1008
+#define IDI_SYSTRAY_ICON 1009
+#define IDI_SYSTRAY_DARK_ICON 1010
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED

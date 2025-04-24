@@ -1,0 +1,36 @@
+diff --git a/node_modules/expo-modules-core/src/ensureNativeModulesAreInstalled.ts b/node_modules/expo-modules-core/src/ensureNativeModulesAreInstalled.ts
+index be4d3b2..bdcc93b 100644
+--- a/node_modules/expo-modules-core/src/ensureNativeModulesAreInstalled.ts
++++ b/node_modules/expo-modules-core/src/ensureNativeModulesAreInstalled.ts
+@@ -1,4 +1,4 @@
+-import { NativeModules, Platform } from 'react-native';
++import { TurboModuleRegistry, Platform } from 'react-native';
+ 
+ import { registerWebGlobals } from './web/index';
+ 
+@@ -18,7 +18,7 @@ export function ensureNativeModulesAreInstalled(): void {
+       // TODO: ExpoModulesCore shouldn't be optional here,
+       // but to keep backwards compatibility let's just ignore it in SDK 50.
+       // In most cases the modules were already installed from the native side.
+-      NativeModules.ExpoModulesCore?.installModules();
++      TurboModuleRegistry.get('ExpoModulesCore')?.installModules();
+     }
+   } catch (error) {
+     console.error(`Unable to install Expo modules: ${error}`);
+diff --git a/node_modules/expo-modules-core/src/requireNativeModule.ts b/node_modules/expo-modules-core/src/requireNativeModule.ts
+index 4aa412b..65a0d14 100644
+--- a/node_modules/expo-modules-core/src/requireNativeModule.ts
++++ b/node_modules/expo-modules-core/src/requireNativeModule.ts
+@@ -1,4 +1,5 @@
+ import NativeModulesProxy from './NativeModulesProxy';
++import { TurboModuleRegistry } from 'react-native';
+ import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
+ 
+ /**
+@@ -31,5 +32,5 @@ export function requireOptionalNativeModule<ModuleType = any>(
+ ): ModuleType | null {
+   ensureNativeModulesAreInstalled();
+ 
+-  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
++  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? TurboModuleRegistry.get(moduleName) ?? null;
+ }

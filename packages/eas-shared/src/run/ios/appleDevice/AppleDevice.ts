@@ -56,6 +56,7 @@ async function getConnectedDevicesUsingNativeToolsAsync(): Promise<AppleConnecte
             device.connectionProperties.transportType === 'localNetwork' ? 'Network' : 'USB',
           osVersion: device.deviceProperties.osVersionNumber,
           osType: device.hardwareProperties.platform as 'iOS',
+          developerModeStatus: device.deviceProperties.developerModeStatus,
         };
       })
   );
@@ -367,7 +368,7 @@ export async function openURLAsync(options: {
   ]);
 }
 
-export async function openSnackURLAsync(udid: string, url: string) {
+export async function openExpoGoURLAsync(udid: string, url: string) {
   return await openURLAsync({
     bundleId: EXPO_GO_BUNDLE_IDENTIFIER,
     udid,

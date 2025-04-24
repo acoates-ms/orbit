@@ -10,6 +10,9 @@ export const Text = create(RNText, {
     fontSize: 14,
     lineHeight: 18,
     ...Platform.select({
+      windows: {
+        color: PlatformColor('Foreground'),
+      },
       web: {
         color: 'var(--text-color)',
       },

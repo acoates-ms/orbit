@@ -2,7 +2,10 @@ import { CodedError } from 'expo-modules-core';
 
 import MenuBarModule, { emitter } from './src/MenuBarModule';
 import Alert from '../../src/modules/Alert';
+import { Logs } from '../../src/modules/Logs';
 import { convertCliErrorObjectToError } from '../../src/utils/helpers';
+
+const logs = new Logs();
 
 let hasShownCliErrorAlert = false;
 let listenerCounter = 0;
@@ -12,11 +15,13 @@ async function runCli(command: string, args: string[], callback?: (status: strin
     if (event.listenerId !== id) {
       return;
     }
+    logs.push({ command, info: event.output });
     callback?.(event.output);
   };
   const listener = emitter.addListener('onCLIOutput', filteredCallback);
   try {
     const result = await MenuBarModule.runCli(command, args, id);
+    logs.push({ command, info: result });
     return result;
   } catch (error) {
     if (error instanceof CodedError && error.code === 'ERR_INTERNAL_CLI') {
@@ -29,7 +34,10 @@ async function runCli(command: string, args: string[], callback?: (status: strin
       }
     } else if (error instanceof Error) {
       // Original error from CLI is a stringified JSON object
-      throw convertCliErrorObjectToError(JSON.parse(error.message));
+      const cliError = convertCliErrorObjectToError(JSON.parse(error.message));
+      logs.push({ command, info: cliError.message });
+
+      throw cliError;
     }
     throw error;
   } finally {
@@ -61,4 +69,5 @@ export default {
     MenuBarModule.showMultiOptionAlert(title, message, options),
   openPopover: () => MenuBarModule.openPopover(),
   closePopover: () => MenuBarModule.closePopover(),
+  logs,
 };

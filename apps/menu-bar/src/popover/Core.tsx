@@ -10,13 +10,14 @@ import DevicesListError from './DevicesListError';
 import { FOOTER_HEIGHT } from './Footer';
 import ProjectsSection, { getProjectSectionHeight } from './ProjectsSection';
 import { SECTION_HEADER_HEIGHT } from './SectionHeader';
+import { useFileHandler } from '../../modules/file-handler';
 import { Analytics, Event } from '../analytics';
 import { withApolloProvider } from '../api/ApolloClient';
 import { bootDeviceAsync } from '../commands/bootDeviceAsync';
 import { detectIOSAppTypeAsync } from "../commands/detectIOSAppTypeAsync'";
 import { downloadBuildAsync } from '../commands/downloadBuildAsync';
 import { installAndLaunchAppAsync } from '../commands/installAndLaunchAppAsync';
-import { launchSnackAsync } from '../commands/launchSnackAsync';
+import { launchExpoGoAsync } from '../commands/launchExpoGoAsync';
 import { launchUpdateAsync } from '../commands/launchUpdateAsync';
 import { Spacer, View } from '../components';
 import DeviceItem, { DEVICE_ITEM_HEIGHT } from '../components/DeviceItem';
@@ -26,7 +27,6 @@ import { useGetPinnedApps } from '../hooks/useGetPinnedApps';
 import { usePopoverFocusEffect } from '../hooks/usePopoverFocus';
 import { useSafeDisplayDimensions } from '../hooks/useSafeDisplayDimensions';
 import Alert from '../modules/Alert';
-import { useFileHandler } from '../modules/FileHandlerModule';
 import MenuBarModule from '../modules/MenuBarModule';
 import {
   SelectedDevicesIds,
@@ -50,9 +50,8 @@ type Props = {
 };
 
 function Core(props: Props) {
-  const [selectedDevicesIds, setSelectedDevicesIds] = useState<SelectedDevicesIds>(
-    getSelectedDevicesIds()
-  );
+  const [selectedDevicesIds, setSelectedDevicesIds] =
+    useState<SelectedDevicesIds>(getSelectedDevicesIds());
 
   const { apps, refetch: refetchApps } = useGetPinnedApps();
   usePopoverFocusEffect(
@@ -93,7 +92,7 @@ function Core(props: Props) {
       ? heightOfAllDevices
       : estimatedAvailableSizeForDevices;
 
-  const getAvailableDeviceForSnack = useCallback(() => {
+  const getAvailableDeviceForExpoGo = useCallback(() => {
     const selectedIosDevice = devicesPerPlatform.ios.devices.get(selectedDevicesIds.ios ?? '');
     const selectedAndroidDevice = devicesPerPlatform.android.devices.get(
       selectedDevicesIds.android ?? ''
@@ -118,7 +117,7 @@ function Core(props: Props) {
     const device = bootedIosDevice ?? bootedAndroidDevice ?? fistDeviceAvailable;
 
     if (!device) {
-      Alert.alert("You don't have any device available to run Snack. Please check your setup.");
+      Alert.alert("You don't have any device available to run Expo Go. Please check your setup.");
       return;
     }
 
@@ -180,9 +179,9 @@ function Core(props: Props) {
     [devicesPerPlatform, selectedDevicesIds]
   );
 
-  const handleSnackUrl = useCallback(
-    async (url: string) => {
-      const device = getAvailableDeviceForSnack();
+  const handleExpoGoUrl = useCallback(
+    async (url: string, sdkVersion?: string | null) => {
+      const device = getAvailableDeviceForExpoGo();
       if (!device) {
         return;
       }
@@ -190,11 +189,12 @@ function Core(props: Props) {
       try {
         setStatus(MenuBarStatus.BOOTING_DEVICE);
         await ensureDeviceIsRunning(device);
-        setStatus(MenuBarStatus.OPENING_SNACK_PROJECT);
-        await launchSnackAsync({
+        setStatus(MenuBarStatus.OPENING_PROJECT_IN_EXPO_GO);
+        await launchExpoGoAsync({
           url,
           deviceId: getDeviceId(device),
           platform: getDeviceOS(device),
+          sdkVersion,
         });
       } catch (error) {
         if (error instanceof InternalError) {
@@ -207,7 +207,7 @@ function Core(props: Props) {
         }, 2000);
       }
     },
-    [ensureDeviceIsRunning, getAvailableDeviceForSnack]
+    [ensureDeviceIsRunning, getAvailableDeviceForExpoGo]
   );
 
   const handleUpdateUrl = useCallback(
@@ -274,6 +274,26 @@ function Core(props: Props) {
                         deviceId: getDeviceId(device),
                         platform: getDeviceOS(device),
                         noInstall: true,
+                      },
+                      (status) => {
+                        setStatus(status);
+                      }
+                    );
+                    setTimeout(() => {
+                      setStatus(MenuBarStatus.LISTENING);
+                    }, 2000);
+                  },
+                },
+                {
+                  text: 'Launch with Expo Go',
+                  onPress: async () => {
+                    setStatus(MenuBarStatus.OPENING_UPDATE);
+                    await launchUpdateAsync(
+                      {
+                        url,
+                        deviceId: getDeviceId(device),
+                        platform: getDeviceOS(device),
+                        forceExpoGo: true,
                       },
                       (status) => {
                         setStatus(status);
@@ -386,15 +406,19 @@ function Core(props: Props) {
       ({ url: deeplinkUrl }) => {
         if (!props.isDevWindow) {
           try {
-            const { urlType, url } = identifyAndParseDeeplinkURL(deeplinkUrl);
-
+            const deeplinkInfo = identifyAndParseDeeplinkURL(deeplinkUrl);
+            const { urlType, url } = deeplinkInfo;
             switch (urlType) {
               case URLType.AUTH:
                 handleAuthUrl(url);
                 break;
+              case URLType.GO:
+                Analytics.track(Event.LAUNCH_EXPO_GO);
+                handleExpoGoUrl(url, deeplinkInfo.sdkVersion);
+                break;
               case URLType.SNACK:
                 Analytics.track(Event.LAUNCH_SNACK);
-                handleSnackUrl(url);
+                handleExpoGoUrl(url);
                 break;
               case URLType.EXPO_UPDATE:
                 Analytics.track(Event.LAUNCH_EXPO_UPDATE);
@@ -414,7 +438,7 @@ function Core(props: Props) {
           }
         }
       },
-      [props.isDevWindow, handleSnackUrl, handleUpdateUrl, installAppFromURI]
+      [props.isDevWindow, handleExpoGoUrl, handleUpdateUrl, installAppFromURI]
     )
   );
 
@@ -457,6 +481,7 @@ function Core(props: Props) {
                   key={device.name}
                   onPress={() => onSelectDevice(device)}
                   onPressLaunch={async () => {
+                    Analytics.track(Event.LAUNCH_SIMULATOR);
                     await bootDeviceAsync({ platform, id });
                     refetch();
                   }}

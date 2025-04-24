@@ -7,6 +7,10 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "orbit.Package", "orbit.Pack
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orbit", "orbit\orbit.vcxproj", "{6113FCE2-E340-4632-B384-9B9EE7CB31C7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Clipboard", "..\..\..\node_modules\@react-native-clipboard\clipboard\windows\Clipboard\Clipboard.vcxproj", "{90BFF18B-474B-445D-9847-B065853288D8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RNSVG", "..\..\..\node_modules\react-native-svg\windows\RNSVG\RNSVG.vcxproj", "{7ACF84EC-EFBA-4043-8E14-40B159508902}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -53,6 +57,30 @@ Global
 		{6113FCE2-E340-4632-B384-9B9EE7CB31C7}.Release|ARM64.ActiveCfg = Release|ARM64
 		{6113FCE2-E340-4632-B384-9B9EE7CB31C7}.Release|ARM64.Build.0 = Release|ARM64
 		{6113FCE2-E340-4632-B384-9B9EE7CB31C7}.Release|ARM64.Deploy.0 = Release|ARM64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Debug|x64.ActiveCfg = Debug|x64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Debug|x64.Build.0 = Debug|x64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Debug|x86.ActiveCfg = Debug|Win32
+		{90BFF18B-474B-445D-9847-B065853288D8}.Debug|x86.Build.0 = Debug|Win32
+		{90BFF18B-474B-445D-9847-B065853288D8}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Debug|ARM64.Build.0 = Debug|ARM64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Release|x64.ActiveCfg = Release|x64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Release|x64.Build.0 = Release|x64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Release|x86.ActiveCfg = Release|Win32
+		{90BFF18B-474B-445D-9847-B065853288D8}.Release|x86.Build.0 = Release|Win32
+		{90BFF18B-474B-445D-9847-B065853288D8}.Release|ARM64.ActiveCfg = Release|ARM64
+		{90BFF18B-474B-445D-9847-B065853288D8}.Release|ARM64.Build.0 = Release|ARM64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Debug|x64.ActiveCfg = Debug|x64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Debug|x64.Build.0 = Debug|x64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Debug|x86.ActiveCfg = Debug|Win32
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Debug|x86.Build.0 = Debug|Win32
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Debug|ARM64.Build.0 = Debug|ARM64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Release|x64.ActiveCfg = Release|x64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Release|x64.Build.0 = Release|x64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Release|x86.ActiveCfg = Release|Win32
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Release|x86.Build.0 = Release|Win32
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Release|ARM64.ActiveCfg = Release|ARM64
+		{7ACF84EC-EFBA-4043-8E14-40B159508902}.Release|ARM64.Build.0 = Release|ARM64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

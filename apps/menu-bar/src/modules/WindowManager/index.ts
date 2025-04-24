@@ -66,9 +66,10 @@ function convertOptionsToNative(options?: WindowOptions): NativeWindowOptions {
 }
 
 if (Platform.OS === 'windows') {
-  // Override default root view style to remove default flex that causes UI to not size properly.
+  // If a root component specifies a property of "noRootFlex: true", then we provide a style without
+  // flex: 1, so that we can use the natural size of the UI without growth to determine the native container size
   AppRegistry.setRootViewStyleProvider((appParameters: any) => {
-    return {};
+    return appParameters?.initialProps?.noRootFlex ? {} : {flex : 1};
   });
 }
 

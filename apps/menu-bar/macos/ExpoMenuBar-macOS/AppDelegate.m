@@ -7,7 +7,6 @@
 
 #import "DevViewController.h"
 #import "WindowNavigator.h"
-#import "FileHandler.h"
 #import "Expo_Orbit-Swift.h"
 #import "DragDropStatusItemView.h"
 
@@ -73,7 +72,8 @@
 - (BOOL)application:(NSApplication *)_ openFile:(NSString *)filename
 {
   [self openPopover];
-  [[FileHandler shared] notifyFileOpened:filename];
+
+  [NSNotificationCenter.defaultCenter postNotificationName:@"ExpoOrbit_OnOpenFile" object:filename];
   return  YES;
 }
 
@@ -129,7 +129,7 @@
 - (void)addPopoverObservers {
   NSNotificationCenter *notificationCenter = NSNotificationCenter.defaultCenter;
   __weak typeof(self) weakSelf = self;
-  
+
   [notificationCenter addObserverForName:@"ExpoOrbit_OpenPopover" object:nil queue:nil usingBlock:^(NSNotification * _Nonnull notification) {
     [weakSelf openPopover];
   }];
@@ -191,7 +191,7 @@
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif

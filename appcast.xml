@@ -1,10 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
+  xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>Orbit</title>
     <link>https://raw.githubusercontent.com/expo/orbit/main/appcast.xml</link>
     <description>Most recent changes with links to updates.</description>
     <language>en</language>
+    <item>
+      <title>2.0.2</title>
+      <description>
+      <![CDATA[
+      <h3 id="-new-features">🎉 New features</h3>
+      <ul>
+        <li>[Windows] Add settings option to context menu. (<a href="https://github.com/expo/orbit/pull/233">#233</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Add support for opening APK files from Explorer on Windows and Linux. (<a href="https://github.com/expo/orbit/pull/237">#237</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Add support for opening projects directly in Expo Go through a deep link. (<a href="https://github.com/expo/orbit/pull/241">#241</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      <h3 id="-others">💡 Others</h3>
+      <ul>
+        <li>Upgrade <code>react-native-macos</code> to 0.76.6. (<a href="https://github.com/expo/orbit/pull/232">#232</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Add tracking simulator launches. (<a href="https://github.com/expo/orbit/pull/246">#246</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      ]]>
+      </description>
+      <pubDate>2025-02-27</pubDate>
+      <releaseNotesLink>https://github.com/expo/orbit/releases/tag/expo-orbit-v2.0.2</releaseNotesLink>
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/expo/orbit/releases/download/expo-orbit-v2.0.2/expo-orbit.v2.0.2-macos.zip"
+        sparkle:version="32"
+        sparkle:shortVersionString="2.0.2"
+        length="0"
+        type="application/octet-stream"
+      />
+    </item>
+    <item>
+      <title>2.0.1</title>
+      <description>
+      <![CDATA[
+      <h3 id="-new-features">🎉 New features</h3>
+      <ul>
+        <li>Allow users to manually launch updates in Expo Go. (<a href="https://github.com/expo/orbit/pull/226">#226</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>[Linux] Add support for auto updates. (<a href="https://github.com/expo/orbit/pull/229">#229</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      <h3 id="-bug-fixes">🐛 Bug fixes</h3>
+      <ul>
+        <li>[macOS] Fix <code>new NativeEventEmitter() requires a non-null argument</code> error when clicking &quot;See all&quot;. (<a href="https://github.com/expo/orbit/pull/225">#225</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>[Linux] Add maintainer field to deb packages. (<a href="https://github.com/expo/orbit/pull/227">#227</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      ]]>
+      </description>
+      <pubDate>2024-12-03</pubDate>
+      <releaseNotesLink>https://github.com/expo/orbit/releases/tag/expo-orbit-v2.0.1</releaseNotesLink>
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/expo/orbit/releases/download/expo-orbit-v2.0.1/expo-orbit.v2.0.1-macos.zip"
+        sparkle:version="31"
+        sparkle:shortVersionString="2.0.1"
+        length="0"
+        type="application/octet-stream"
+      />
+    </item>
+    <item>
+      <title>2.0.0</title>
+      <description>
+      <![CDATA[
+      <h2 id="windows-and-linux-builds-now-available-">Windows and Linux builds now available!</h2>
+      <p>We&#39;re promoting Orbit for Windows to a stable version along with support for Linux. Try out Expo Orbit now, explore its capabilities, and share your feedback. Your input will shape the future of this tool and guide us on where to take it next.</p>
+      <h2 id="changelog">Changelog</h2>
+      <h3 id="-new-features">🎉 New features</h3>
+      <ul>
+        <li>Add experimental support for Windows and Linux. (<a href="https://github.com/expo/orbit/pull/152">#152</a>, <a href="https://github.com/expo/orbit/pull/157">#157</a>, <a href="https://github.com/expo/orbit/pull/158">#158</a>, <a href="https://github.com/expo/orbit/pull/160">#160</a>, <a href="https://github.com/expo/orbit/pull/161">#161</a>, <a href="https://github.com/expo/orbit/pull/165">#165</a>, <a href="https://github.com/expo/orbit/pull/170">#170</a>, <a href="https://github.com/expo/orbit/pull/171">#171</a>, <a href="https://github.com/expo/orbit/pull/172">#172</a>, <a href="https://github.com/expo/orbit/pull/173">#173</a>, <a href="https://github.com/expo/orbit/pull/174">#174</a>, <a href="https://github.com/expo/orbit/pull/175">#175</a>, <a href="https://github.com/expo/orbit/pull/177">#177</a>, <a href="https://github.com/expo/orbit/pull/178">#178</a>, <a href="https://github.com/expo/orbit/pull/180">#180</a>, <a href="https://github.com/expo/orbit/pull/181">#181</a>, <a href="https://github.com/expo/orbit/pull/182">#182</a>, <a href="https://github.com/expo/orbit/pull/185">#185</a>, <a href="https://github.com/expo/orbit/pull/191">#191</a>, <a href="https://github.com/expo/orbit/pull/220">#220</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      <h3 id="-others">💡 Others</h3>
+      <ul>
+        <li>Upgrade <code>react-native</code> to 0.76.1. (<a href="https://github.com/expo/orbit/pull/217">#217</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Upgrade to <code>expo</code> SDK 52. (<a href="https://github.com/expo/orbit/pull/217">#217</a>, <a href="https://github.com/expo/orbit/pull/219">#219</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Upgrade <code>react-native-svg</code> to 15.8.X. (<a href="https://github.com/expo/orbit/pull/217">#217</a>, <a href="https://github.com/expo/orbit/pull/219">#219</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Upgrade <code>electron</code> to 33.2.0. (<a href="https://github.com/expo/orbit/pull/218">#218</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Add github workflow to build for Windows and Linux. (<a href="https://github.com/expo/orbit/pull/221">#221</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      ]]>
+      </description>
+      <pubDate>2024-11-22</pubDate>
+      <releaseNotesLink>https://github.com/expo/orbit/releases/tag/expo-orbit-v2.0.0</releaseNotesLink>
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/expo/orbit/releases/download/expo-orbit-v2.0.0/expo-orbit.v2.0.0-macos.zip"
+        sparkle:version="30"
+        sparkle:shortVersionString="2.0.0"
+        length="0"
+        type="application/octet-stream"
+      />
+    </item>
+    <item>
+      <title>1.2.1</title>
+      <description>
+      <![CDATA[
+      <h3 id="-bug-fixes">🐛 Bug fixes</h3>
+      <ul>
+        <li>Fixed CLI on x64 machines. (<a href="https://github.com/expo/orbit/pull/215">#215</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      <h3 id="-others">💡 Others</h3>
+      <ul>
+        <li>Show Debug Window in release mode. (<a href="https://github.com/expo/orbit/pull/216">#216</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      ]]>
+      </description>
+      <pubDate>2024-11-05</pubDate>
+      <releaseNotesLink>https://github.com/expo/orbit/releases/tag/expo-orbit-v1.2.1</releaseNotesLink>
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/expo/orbit/releases/download/expo-orbit-v1.2.1/expo-orbit.v1.2.1.zip"
+        sparkle:version="29"
+        sparkle:shortVersionString="1.2.1"
+        length="0"
+        type="application/octet-stream"
+      />
+    </item>
+    <item>
+      <title>1.2.0</title>
+      <description>
+      <![CDATA[
+      <h3 id="-new-features">🎉 New features</h3>
+      <ul>
+        <li>Automatically select the correct iOS device depending on app type. (<a href="https://github.com/expo/orbit/pull/200">#200</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Add support for self-signed certificates. (<a href="https://github.com/expo/orbit/pull/208">#208</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      <h3 id="-others">💡 Others</h3>
+      <ul>
+        <li>Update devices order to show physical devices first. (<a href="https://github.com/expo/orbit/pull/197">#197</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Improve listing connected Apple devices over Wi-Fi. (<a href="https://github.com/expo/orbit/pull/199">#199</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Upgrade <code>react-native</code> to 0.75.2. (<a href="https://github.com/expo/orbit/pull/203">#203</a>, <a href="https://github.com/expo/orbit/pull/209">#209</a>, by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Upgrade to <code>expo</code> SDK 51. (<a href="https://github.com/expo/orbit/pull/204">#204</a>, <a href="https://github.com/expo/orbit/pull/212">#212</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Upgrade <code>react-native-svg</code> to 15.2.0. (<a href="https://github.com/expo/orbit/pull/204">#204</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+        <li>Add debug logs to debug menu. (<a href="https://github.com/expo/orbit/pull/211">#211</a> by <a href="https://github.com/gabrieldonadel">@gabrieldonadel</a>)</li>
+      </ul>
+      ]]>
+      </description>
+      <pubDate>2024-11-05</pubDate>
+      <releaseNotesLink>https://github.com/expo/orbit/releases/tag/expo-orbit-v1.2.0</releaseNotesLink>
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/expo/orbit/releases/download/expo-orbit-v1.2.0/expo-orbit.v1.2.0.zip"
+        sparkle:version="28"
+        sparkle:shortVersionString="1.2.0"
+        length="0"
+        type="application/octet-stream"
+      />
+    </item>
     <item>
       <title>1.1.1</title>
       <description>
@@ -130,7 +274,7 @@
         type="application/octet-stream"
       />
     </item>
-     <item>
+    <item>
       <title>1.0.2</title>
       <description>
       <![CDATA[
@@ -168,7 +312,7 @@
         type="application/octet-stream"
       />
     </item>
-     <item>
+    <item>
       <title>1.0.1</title>
       <description>
       <![CDATA[

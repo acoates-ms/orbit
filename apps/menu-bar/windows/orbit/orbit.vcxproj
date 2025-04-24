@@ -111,6 +111,7 @@
     <ClCompile Include="..\..\modules\menu-bar\windows\MenuBarModule.cpp" />
     <ClCompile Include="..\..\modules\web-authentication-session\windows\WebAuthenticationSessionModule.cpp" />
     <ClCompile Include="orbit.cpp" />
+    <ClCompile Include="SysTray.cpp" />
     <ClCompile Include="AutolinkedNativeModules.g.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

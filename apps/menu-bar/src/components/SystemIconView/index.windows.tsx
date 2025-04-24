@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ImageProps } from 'react-native';
+import { StyleSheet, Text, ImageProps, PlatformColor } from 'react-native';
 
 type Props = Omit<ImageProps, 'source'> & { systemIconName: string };
 
@@ -21,8 +21,10 @@ const SystemIconView = (props: Props) => {
 
 const styles = StyleSheet.create({
   icon: {
-    height: 18,
-    width: 18,
+    color: PlatformColor('Foreground'),
+    fontSize: 22,
+    height: 24,
+    width: 24,
   },
 });
 

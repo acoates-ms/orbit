@@ -1,0 +1,60 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - expo-orbit-v*
+
+jobs:
+  build_on_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 🧶 Install workspace node modules
+        run: yarn install --frozen-lockfile
+      - name: 📦️ Build packages
+        run: yarn build
+      - name: 🧶 Install electron node modules
+        run: yarn install --frozen-lockfile
+        working-directory: apps/menu-bar/electron
+      - name: 📦️ Build electron app
+        run: yarn make
+        working-directory: apps/menu-bar/electron
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifact
+          path: apps/menu-bar/electron/out
+
+  build_on_win:
+    runs-on: windows-latest
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 🧶 Install workspace node modules
+        run: yarn install --frozen-lockfile
+      - name: 📦️ Build packages
+        run: yarn build
+      - name: 🧶 Install electron node modules
+        run: yarn install --frozen-lockfile
+        working-directory: apps/menu-bar/electron
+      - name: 📦️ Build electron app
+        run: yarn make
+        working-directory: apps/menu-bar/electron
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifact
+          path: apps/menu-bar/electron/out
