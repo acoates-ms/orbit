@@ -39,6 +39,16 @@
         <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
+
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="expo-orbit">
+            <uap:Logo>mages\Square44x44Logo.png</uap:Logo>
+            <uap:DisplayName>Expo Orbit URI Scheme</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+      </Extensions>
+
     </Application>
   </Applications>
 

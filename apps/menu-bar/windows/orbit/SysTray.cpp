@@ -55,9 +55,8 @@ struct SysTrayMenu : winrt::implements<SysTrayMenu, winrt::Windows::Foundation::
 			m_reactNativeIsland.SizeChanged({ get_weak(), &SysTrayMenu::OnIslandSizeChanged });
 
 			winrt::Microsoft::ReactNative::ReactViewOptions viewOptions;
-			viewOptions.ComponentName(L"Settings");
+			viewOptions.ComponentName(L"main");
 			viewOptions.InitialProps(winrt::Microsoft::ReactNative::MakeJSValueWriter(m_props));
-
 			m_reactNativeIsland.ReactViewHost(winrt::Microsoft::ReactNative::ReactCoreInjection::MakeViewHost(host, viewOptions));
 
 			winrt::Microsoft::ReactNative::LayoutConstraints constraints;
@@ -441,6 +440,9 @@ void InitSysTray(HINSTANCE hInstance, const winrt::Microsoft::ReactNative::React
 		windowData.get());
 
 	winrt::Microsoft::ReactNative::ReactPropertyBag(host.InstanceSettings().Properties()).Set(SystrayHwndPropertyId(), hwnd);
+
+	winrt::Microsoft::ReactNative::ReactCoreInjection::SetTopLevelWindowId(
+		host.InstanceSettings().Properties(), reinterpret_cast<UINT_PTR>(hwnd));
 
 	windowData.release();
 }

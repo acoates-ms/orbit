@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
 
 import Core from './Core';
 import { ErrorBoundary, FallbackProps } from './ErrorBoundary';
@@ -38,13 +39,16 @@ function Popover(props: Props) {
 
   return (
     <View
-      style={{
-        /**
-         * Need to check dimensions of the screen on render time as the Popover
-         * can be opened from different displays.
-         */
-        maxHeight: height,
-      }}>
+      style={Platform.select({
+        windows: {},
+        default: {
+          /**
+           * Need to check dimensions of the screen on render time as the Popover
+           * can be opened from different displays.
+           */
+          maxHeight: height,
+        },
+      })}>
       <ErrorBoundary fallback={Fallback}>
         <Core isDevWindow={props.isDevWindow} />
       </ErrorBoundary>

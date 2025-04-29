@@ -18,5 +18,6 @@ function userSettingsJsonFile(): JsonFile<UserData> {
   return new JsonFile<UserData>(StorageUtils.userSettingsFile(os.homedir()), {
     jsonParseErrorDefault: {},
     cantReadFileDefault: {},
+    ensureDir: true,
   });
 }

@@ -1,6 +1,6 @@
 const { getDefaultConfig } = require('expo/metro-config');
-const path = require('path');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
+const path = require('path');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
@@ -18,12 +18,8 @@ module.exports = {
     ...config.resolver,
     blockList: exclusionList([
       // This stops "react-native run-windows" from causing the metro server to crash if its already running
-      new RegExp(
-        `${path.resolve(__dirname, 'windows').replace(/[/\\]/g, '\\')}.*`,
-      ),
-      new RegExp(
-        `${path.resolve(__dirname, 'windows').replace(/[/\\]/g, '/')}.*`,
-      ),
+      new RegExp(`${path.resolve(__dirname, 'windows').replace(/[/\\]/g, '\\')}.*`),
+      new RegExp(`${path.resolve(__dirname, 'windows').replace(/[/\\]/g, '/')}.*`),
     ]),
     disableHierarchicalLookup: true,
     nodeModulesPaths: [

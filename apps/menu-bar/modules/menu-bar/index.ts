@@ -1,4 +1,5 @@
 import { CodedError } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 import MenuBarModule, { emitter } from './src/MenuBarModule';
 import Alert from '../../src/modules/Alert';
@@ -45,11 +46,16 @@ async function runCli(command: string, args: string[], callback?: (status: strin
   }
 }
 
+const menuBarConstants =
+  Platform.OS == 'windows'
+    ? (MenuBarModule as unknown as { getConstants: () => typeof MenuBarModule }).getConstants()
+    : MenuBarModule;
+
 export default {
-  appVersion: MenuBarModule.appVersion,
-  buildVersion: MenuBarModule.buildVersion,
-  initialScreenSize: MenuBarModule.initialScreenSize,
-  homedir: MenuBarModule.homedir,
+  appVersion: menuBarConstants.appVersion,
+  buildVersion: menuBarConstants.buildVersion,
+  initialScreenSize: menuBarConstants.initialScreenSize,
+  homedir: menuBarConstants.homedir,
   exitApp: () => MenuBarModule.exitApp(),
   openSystemSettingsLoginItems: () => MenuBarModule.openSystemSettingsLoginItems(),
   runCli,

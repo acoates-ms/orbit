@@ -1,6 +1,6 @@
 // Use switch instead of checkbox for now
-import { Switch }  from 'react-native-windows';
 import React from 'react';
+import { Switch } from 'react-native-windows';
 
 import { CheckboxChangeEvent, NativeCheckboxProps } from './types';
 

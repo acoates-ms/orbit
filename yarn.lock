@@ -12952,10 +12952,10 @@ react-native-web@~0.19.6:
     postcss-value-parser "^4.2.0"
     styleq "^0.1.3"
 
-react-native-windows@0.76.11:
-  version "0.76.11"
-  resolved "https://registry.yarnpkg.com/react-native-windows/-/react-native-windows-0.76.11.tgz#70be84ee5376157322bb6496a9308c28294bc607"
-  integrity sha512-ZoICVtY7QjctFktkI0BC+UcgtymhifPZxLuZKcxFwftdJqqrhf7giLof0WwX1ckV98NFxKE2ejjJ5xe7pnAMww==
+react-native-windows@0.76.13:
+  version "0.76.13"
+  resolved "https://registry.yarnpkg.com/react-native-windows/-/react-native-windows-0.76.13.tgz#22522890fde988dbb6e67b5eef694a9204920610"
+  integrity sha512-zAsLt5Gdzr1TfxrFd8hTfaBg5q8gzDAvXgsa+4T53gf1tji5dzoijsh/plBZX72lwzw/J3AhibqxXV+czdgkbQ==
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@jest/create-cache-key-function" "^29.6.3"

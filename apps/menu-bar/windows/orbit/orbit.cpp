@@ -17,10 +17,15 @@
 #include "SysTray.h"
 
 #include <winrt/Microsoft.UI.interop.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Microsoft.Security.Authentication.OAuth.h>
+#include <winrt/Windows.Storage.h>
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.UI.h>
+#include <winrt/Microsoft.Windows.AppLifecycle.h>
 
+#include "..\..\modules\file-handler\windows\FileHandlerModule.h"
 
 // UI is currently using a couple of platformColor values which do not exist in RN-Windows
 // This provides those additional PlatformColors.
@@ -92,6 +97,22 @@ struct WindowsManagerConstants
 
 };
 
+REACT_MODULE(ExpoKeepAwake)
+struct ExpoKeepAwake
+{
+	REACT_METHOD(isAvailableAsync)
+	void isAvailableAsync(winrt::Microsoft::ReactNative::ReactPromise<bool> result) noexcept
+	{
+		result.Resolve(false);
+	}
+
+	REACT_METHOD(activateKeepAwakeAsync)
+	void activateKeepAwakeAsync(winrt::Microsoft::ReactNative::ReactPromise<void> result) noexcept
+	{
+		result.Reject("Not implemented on windows");
+	}
+};
+
 constexpr PCWSTR appName = L"Expo Orbit";
 
 REACT_STRUCT(WindowProps)
@@ -99,7 +120,7 @@ struct WindowProps
 {
 	// Used by root container to add/remove root view's flex:1 property
 	REACT_FIELD(noRootFlex)
-	bool noRootFlex { true };
+	bool noRootFlex { false };
 };
 
 REACT_MODULE(WindowsManager)
@@ -109,6 +130,18 @@ struct WindowsManager : std::enable_shared_from_this<WindowsManager>
 		winrt::Microsoft::ReactNative::ReactNativeIsland reactNativeIsland { nullptr };
 		winrt::Microsoft::UI::Windowing::AppWindow appWindow { nullptr };
 	};
+
+	~WindowsManager()
+	{
+		// Destroy AppWindows on UI thread.
+		m_context.UIDispatcher().Post([windows = std::move(m_windows)]()
+		{
+			for (const auto& p : windows)
+			{
+				p.second->appWindow.Destroy();
+			}
+		});
+	}
 
 	REACT_INIT(Initialize);
 	void Initialize(const winrt::Microsoft::ReactNative::ReactContext& reactContext) noexcept
@@ -125,11 +158,29 @@ struct WindowsManager : std::enable_shared_from_this<WindowsManager>
 	REACT_METHOD(openWindow)
 		void openWindow(const std::string& window, winrt::Microsoft::ReactNative::JSValueObject& args) noexcept
 	{
-		m_context.UIDispatcher().Post([window, wkThis = weak_from_this()]()
+		const auto& windowStyle = args["windowStyle"];
+
+		float height = 0;
+		float width = 0;
+
+		if (windowStyle)
+		{
+			height = windowStyle["height"].AsSingle();
+			width = windowStyle["width"].AsSingle();
+		}
+
+		m_context.UIDispatcher().Post([window, height, width, wkThis = weak_from_this()]()
 		{
 			if (auto strongThis = wkThis.lock())
 			{
 				auto data = std::make_shared<WindowData>();
+
+				if (strongThis->m_windows[window])
+				{
+					strongThis->m_windows[window]->appWindow.Show(true);
+					return;
+				}
+
 				strongThis->m_windows[window] = data;
 
 				auto presenter = winrt::Microsoft::UI::Windowing::OverlappedPresenter::CreateForDialog();
@@ -137,6 +188,9 @@ struct WindowsManager : std::enable_shared_from_this<WindowsManager>
 				data->appWindow = appWindow;
 				appWindow.IsShownInSwitchers(true);
 				appWindow.Title(appName);
+				auto scale = ScaleFactor(winrt::Microsoft::UI::GetWindowFromWindowId(appWindow.Id()));
+
+				appWindow.ResizeClient({ static_cast<int>(width * scale), static_cast<int>(height * scale) });
 
 				auto compositor = winrt::Microsoft::ReactNative::Composition::CompositionUIService::GetCompositor(strongThis->m_context.Properties().Handle());
 				auto reactNativeIsland = winrt::Microsoft::ReactNative::ReactNativeIsland(compositor);
@@ -144,27 +198,16 @@ struct WindowsManager : std::enable_shared_from_this<WindowsManager>
 				
 				winrt::Microsoft::ReactNative::LayoutConstraints constraints;
 				constraints.LayoutDirection = winrt::Microsoft::ReactNative::LayoutDirection::Undefined;
-				constraints.MinimumSize = { 0, 0 };
-				constraints.MaximumSize = { 1000, 1000 };
-				reactNativeIsland.Arrange(constraints, { 0, 0 });
-			
-				//TODO remove sizeChanged on close
-				reactNativeIsland.SizeChanged([window, wkThis](
-					winrt::Windows::Foundation::IInspectable const& /*sender*/, const winrt::Microsoft::ReactNative::RootViewSizeChangedEventArgs& /* args*/)
+				if (height != 0)
 				{
-					if (auto innerStrong = wkThis.lock())
-					{
-						auto compositor = winrt::Microsoft::ReactNative::Composition::CompositionUIService::GetCompositor(innerStrong->m_context.Properties().Handle());
-						auto async = compositor.RequestCommitAsync();
-						const auto& data = innerStrong->m_windows[window];
-						async.Completed([wkThis, size = data->reactNativeIsland.Size(), appWindow = data->appWindow](auto, winrt::Windows::Foundation::AsyncStatus /*asyncStatus*/)
-						{
-							auto scale = ScaleFactor(winrt::Microsoft::UI::GetWindowFromWindowId(appWindow.Id()));
-							appWindow.ResizeClient({ static_cast<int32_t>(size.Width * scale), static_cast<int32_t>(size.Height * scale) });
-							appWindow.Show();
-						});
-					}
-				});
+					constraints.MaximumSize = constraints.MinimumSize = { width, height };
+				}
+				else
+				{
+					constraints.MinimumSize = { 0, 0 };
+					constraints.MaximumSize = { 1000, 1000 };
+				}
+				reactNativeIsland.Arrange(constraints, { 0, 0 });
 			
 				winrt::Microsoft::ReactNative::ReactViewOptions viewOptions;
 				viewOptions.ComponentName(winrt::to_hstring(window));
@@ -179,6 +222,7 @@ struct WindowsManager : std::enable_shared_from_this<WindowsManager>
 				reactNativeIsland.ReactViewHost(winrt::Microsoft::ReactNative::ReactCoreInjection::MakeViewHost(host, viewOptions));
 
 				bridge.Show();
+				appWindow.Show();
 			}
 		});
 	}
@@ -186,7 +230,23 @@ struct WindowsManager : std::enable_shared_from_this<WindowsManager>
 	REACT_METHOD(closeWindow)
 		void closeWindow(const std::string& window) noexcept
 	{
-		assert(false);
+		m_context.UIDispatcher().Post([window, wkThis = weak_from_this()]()
+		{
+			if (auto strong = wkThis.lock())
+			{
+				if (auto data = strong->m_windows[window])
+				{
+					data->appWindow.Destroy();
+					data->reactNativeIsland = nullptr;
+					data->appWindow = nullptr;
+					strong->m_windows.erase(window);
+				}
+				else
+				{
+					assert(false);
+				}
+			}
+		});
 	}
 
 private:
@@ -342,11 +402,80 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
 	// Create a DispatcherQueue for this thread.  This is needed for Composition, Content, and
 	// Input APIs.
 	auto dispatcherQueueController { winrt::Microsoft::UI::Dispatching::DispatcherQueueController::CreateOnCurrentThread() };
+	auto keyInstance = winrt::Microsoft::Windows::AppLifecycle::AppInstance::FindOrRegisterForKey(L"Main");
+
+	if (!keyInstance.IsCurrent())
+	{
+		auto appInstance = winrt::Microsoft::Windows::AppLifecycle::AppInstance::GetCurrent();
+		auto activationArgs = appInstance.GetActivatedEventArgs();
+
+		if (activationArgs.Kind() == winrt::Microsoft::Windows::AppLifecycle::ExtendedActivationKind::Protocol)
+		{
+			if (auto protocolActivated = activationArgs.Data().as<winrt::Windows::ApplicationModel::Activation::IProtocolActivatedEventArgs>())
+			{
+				if (winrt::Microsoft::Security::Authentication::OAuth::OAuth2Manager::CompleteAuthRequest(protocolActivated.Uri()))
+				{
+					// If this starts working, then we can remove the RedirectActivationToAsync below, and the keyInstance.Activated handler
+					OutputDebugStringW(L"WOOT");
+				}
+				else
+				{
+					keyInstance.RedirectActivationToAsync(activationArgs).Completed([dispatcherQueueController](auto, auto)
+					{
+						PostQuitMessage(0);
+					});
+				}
+			}
+		}
+		else if (activationArgs.Kind() == winrt::Microsoft::Windows::AppLifecycle::ExtendedActivationKind::File)
+		{
+			keyInstance.RedirectActivationToAsync(activationArgs).Completed([dispatcherQueueController](auto, auto)
+			{
+				PostQuitMessage(0);
+			});
+		}
+
+		dispatcherQueueController.DispatcherQueue().RunEventLoop();
+		dispatcherQueueController.ShutdownQueue();
+		return 0;
+	}
 
 	// Create a Compositor for all Content on this thread.	
 	g_compositor = winrt::Microsoft::UI::Composition::Compositor();
 
 	g_host = CreateReactNativeHost(g_compositor);
+
+	keyInstance.Activated([host = g_host](auto sender, const winrt::Microsoft::Windows::AppLifecycle::AppActivationArguments& args)
+	{
+		if (args.Kind() == winrt::Microsoft::Windows::AppLifecycle::ExtendedActivationKind::Protocol)
+		{
+			if (auto protocolActivated = args.Data().as<winrt::Windows::ApplicationModel::Activation::IProtocolActivatedEventArgs>())
+			{
+				auto i = protocolActivated.Uri();
+
+				if (winrt::Microsoft::Security::Authentication::OAuth::OAuth2Manager::CompleteAuthRequest(protocolActivated.Uri()))
+				{
+				}
+				// Not sure why CompleteAuthRequest isn't working... so instead we'll forward it to the web request module directly
+				else
+				{
+					host.InstanceSettings().Notifications().SendNotification(winrt::Microsoft::ReactNative::ReactPropertyBagHelper::GetName(winrt::Microsoft::ReactNative::ReactPropertyBagHelper::GetNamespace(L"Orbit"), L"AuthResponseUri"), nullptr, winrt::box_value(protocolActivated.Uri()));
+				}
+				OutputDebugStringW(i.ToString().c_str());
+			}
+		}
+		else if (args.Kind() == winrt::Microsoft::Windows::AppLifecycle::ExtendedActivationKind::File)
+		{
+			if (auto fileActivationArgs = args.Data().as<winrt::Windows::ApplicationModel::Activation::IFileActivatedEventArgs>())
+			{
+				auto files = fileActivationArgs.Files();
+				for (const auto& file : files)
+				{
+					winrt::Microsoft::ReactNative::ReactNotificationService(host.InstanceSettings().Notifications()).SendNotification(FileHandlerOpenNotification(), file.Path());
+				}
+			}
+		}
+	});
 
 	// Start the react-native instance, which will create a JavaScript runtime and load the applications bundle
 	g_host.ReloadInstance();
@@ -363,4 +492,6 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
 	// Destroy all Composition objects
 	g_compositor.Close();
 	g_compositor = nullptr;
+
+	return 0;
 }

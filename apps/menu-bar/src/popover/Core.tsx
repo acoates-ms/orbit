@@ -2,7 +2,7 @@ import { InternalError } from 'common-types';
 import { MultipleAppsInTarballErrorDetails } from 'common-types/build/InternalError';
 import { Device } from 'common-types/build/devices';
 import React, { memo, useCallback, useState } from 'react';
-import { SectionList } from 'react-native';
+import { Platform, SectionList } from 'react-native';
 
 import BuildsSection, { BUILDS_SECTION_HEIGHT } from './BuildsSection';
 import DeviceListSectionHeader from './DeviceListSectionHeader';
@@ -467,7 +467,10 @@ function Core(props: Props) {
         ) : (
           <SectionList
             sections={sections}
-            style={{ minHeight: estimatedListHeight }}
+            style={Platform.select({
+              windows: { flexGrow: 0 },
+              default: { minHeight: estimatedListHeight },
+            })}
             SectionSeparatorComponent={Separator}
             renderSectionHeader={({ section: { label, error } }) => (
               <DeviceListSectionHeader label={label} errorMessage={error?.message} />

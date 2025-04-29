@@ -65,10 +65,8 @@ const Onboarding = () => {
     }, [])
   );
 
-const flex = Platform.select({windows: 0, default: 1});
-
   return (
-    <View flex={flex} bg="default">
+    <View flex="1" bg="default">
       <Image source={Background} style={styles.background} />
       <ScrollView style={{ marginTop: -WINDOW_TITLE_HEIGHT }} alwaysBounceVertical={false}>
         <View style={styles.header}>

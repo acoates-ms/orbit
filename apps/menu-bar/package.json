@@ -43,7 +43,7 @@
     "react-native-svg": "15.11.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.6",
-    "react-native-windows": "0.76.11",
+    "react-native-windows": "0.76.13",
     "rudder-sdk-js": "^2.48.1"
   },
   "devDependencies": {

@@ -75,7 +75,7 @@ interface Listener {
   id: number;
   remove: () => void;
 }
-let _localStorageListeners: Listener[] = [];
+const _localStorageListeners: Listener[] = [];
 let _nextId = 1;
 export const storage = {
   /**
@@ -135,12 +135,12 @@ export const storage = {
   },
 
   addOnValueChangedListener: (onValueChanged: (key: string) => void) => {
-    let id = _nextId++;
-    let listener: Listener = {
+    const id = _nextId++;
+    const listener: Listener = {
       id,
       onValueChanged,
       remove: () => {
-        let index = _localStorageListeners.findIndex((_) => _.id === id);
+        const index = _localStorageListeners.findIndex((_) => _.id === id);
         _localStorageListeners.splice(index, 1);
       },
     };

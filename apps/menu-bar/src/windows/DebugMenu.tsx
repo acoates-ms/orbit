@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Platform, PlatformColor} from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import { View, Row, Text } from '../components';
 import { DebugLogs } from '../components/DebugLogs';
