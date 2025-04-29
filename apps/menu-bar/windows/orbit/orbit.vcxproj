@@ -15,6 +15,7 @@
     <AppxPackage>false</AppxPackage>
   </PropertyGroup>
   <PropertyGroup Label="ReactNativeWindowsProps">
+    <BundleEntryFile>apps/menu-bar/index.js</BundleEntryFile> <!-- default is index.tsx, but its looking at the root of the repo for some reason (metro config?) -->
     <ReactNativeWindowsDir Condition="'$(ReactNativeWindowsDir)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), 'node_modules\react-native-windows\package.json'))\node_modules\react-native-windows\</ReactNativeWindowsDir>
   </PropertyGroup>
   <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.WindowsSdk.Default.props" />

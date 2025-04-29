@@ -121,8 +121,14 @@ struct MenuBar
         if (!SetHandleInformation(hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0))
             result.Reject("Stdout SetHandleInformation");
 
-        // TODO how to pack cli into project?
-        auto cmdLine = std::string("node E:\\repos\\orbit\\apps\\cli\\build\\index.js ") + command;
+        char appDirectory[MAX_PATH];
+        GetModuleFileNameA(NULL, appDirectory, MAX_PATH);
+
+        std::string cliPath(appDirectory);
+        cliPath = cliPath.substr(0, cliPath.size() - std::string("orbit.exe").length());
+        cliPath = cliPath + "..\\orbit-cli.exe ";
+
+        auto cmdLine = cliPath + command;
 
         // Escape input for command line args
         for (const auto& arg : args)
