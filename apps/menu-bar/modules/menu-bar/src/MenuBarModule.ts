@@ -1,9 +1,6 @@
-import { requireNativeModule, LegacyEventEmitter } from 'expo-modules-core';
-import { NativeModule } from 'react-native';
+import { NativeModule, requireNativeModule } from 'expo';
+import { NativeMenuBarModule, NativeMenuBarModuleEvents } from './types';
 
-import { NativeMenuBarModule } from './types';
+declare class MenuBarModule extends NativeModule<NativeMenuBarModuleEvents> {}
 
-const MenuBarModule = requireNativeModule<NativeModule & NativeMenuBarModule>('MenuBar');
-export const emitter = new LegacyEventEmitter(MenuBarModule);
-
-export default MenuBarModule;
+export default requireNativeModule<MenuBarModule>('MenuBar') as MenuBarModule & NativeMenuBarModule;

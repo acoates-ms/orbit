@@ -17,6 +17,11 @@ export interface NativeMenuBarModule {
   closePopover(): void;
 }
 
+export type NativeMenuBarModuleEvents = {
+  onCLIOutput: (response: { listenerId: number, output: string }) => void;
+  onNewCommandLine: (output: string) => void;
+};
+
 type PreloadKeys = 'initialScreenSize' | 'closePopover' | 'openPopover';
 
 export interface ElectronMainMenuBarModule

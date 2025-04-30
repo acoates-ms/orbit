@@ -37,7 +37,7 @@ struct OnCLIOutputArgs
     std::string output;
 };
 
-REACT_MODULE(MenuBar)
+REACT_TURBO_MODULE(MenuBar)
 struct MenuBar
 {
     REACT_INIT(Initialize);
@@ -294,15 +294,6 @@ struct MenuBar
         */
     }
 
-    REACT_METHOD(addListener)
-        void addListener(std::string const&) noexcept
-    {
-    }
-
-    REACT_METHOD(removeListeners)
-        void removeListeners(int) noexcept
-    {
-    }
 private:
     winrt::Microsoft::ReactNative::ReactContext m_context;
 };

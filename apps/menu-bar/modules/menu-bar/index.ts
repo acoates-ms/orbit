@@ -1,7 +1,6 @@
 import { CodedError } from 'expo-modules-core';
-import { Platform } from 'react-native';
 
-import MenuBarModule, { emitter } from './src/MenuBarModule';
+import MenuBarModule from './src/MenuBarModule';
 import Alert from '../../src/modules/Alert';
 import { Logs } from '../../src/modules/Logs';
 import { convertCliErrorObjectToError } from '../../src/utils/helpers';
@@ -19,7 +18,7 @@ async function runCli(command: string, args: string[], callback?: (status: strin
     logs.push({ command, info: event.output });
     callback?.(event.output);
   };
-  const listener = emitter.addListener('onCLIOutput', filteredCallback);
+  const listener = MenuBarModule.addListener('onCLIOutput', filteredCallback);
   try {
     const result = await MenuBarModule.runCli(command, args, id);
     logs.push({ command, info: result });
@@ -46,16 +45,11 @@ async function runCli(command: string, args: string[], callback?: (status: strin
   }
 }
 
-const menuBarConstants =
-  Platform.OS == 'windows'
-    ? (MenuBarModule as unknown as { getConstants: () => typeof MenuBarModule }).getConstants()
-    : MenuBarModule;
-
 export default {
-  appVersion: menuBarConstants.appVersion,
-  buildVersion: menuBarConstants.buildVersion,
-  initialScreenSize: menuBarConstants.initialScreenSize,
-  homedir: menuBarConstants.homedir,
+  appVersion: MenuBarModule.appVersion,
+  buildVersion: MenuBarModule.buildVersion,
+  initialScreenSize: MenuBarModule.initialScreenSize,
+  homedir: MenuBarModule.homedir,
   exitApp: () => MenuBarModule.exitApp(),
   openSystemSettingsLoginItems: () => MenuBarModule.openSystemSettingsLoginItems(),
   runCli,
@@ -64,7 +58,7 @@ export default {
     args: string[],
     callback: (status: string) => void
   ) => {
-    const listener = emitter.addListener('onNewCommandLine', callback);
+    const listener = MenuBarModule.addListener('onNewCommandLine', callback);
     const result = await MenuBarModule.runCommand(command, args);
     listener.remove();
     return result;

@@ -1,3 +1,78 @@
+diff --git a/node_modules/expo-modules-core/src/TurboModuleToExpoModuleProxy.native.ts b/node_modules/expo-modules-core/src/TurboModuleToExpoModuleProxy.native.ts
+new file mode 100644
+index 0000000..a427f6f
+--- /dev/null
++++ b/node_modules/expo-modules-core/src/TurboModuleToExpoModuleProxy.native.ts
+@@ -0,0 +1,57 @@
++// Copyright © 2024 650 Industries.
++import type { TurboModule, EventSubscription } from 'react-native';
++
++function addListener(eventName: string, listener: (...args: any[]) => any): EventSubscription
++{
++  const eventEmitter = this[eventName];
++  if (this.addListener) {
++    this.addListener(eventName);
++  }
++  return eventEmitter(listener);
++}
++
++
++// This is probably more perfomant, by doing a little more up front work to avoid using a Proxy object
++// But it will end up creating all the jsi::function's for all the properties up front.
++export function createTurboModuleToExpoProxy(turboModule: TurboModule, name: string) {
++  if (!turboModule)
++    return null;
++
++  const expoModuleProxy: any = {
++    __turboModule: turboModule,
++  };
++
++  Object.keys(Object.getPrototypeOf(turboModule)).forEach((prop) => {
++    expoModuleProxy[prop] = turboModule[prop];
++  });
++
++  if (turboModule.getConstants) {
++    const constants = turboModule.getConstants();
++    Object.keys(constants).forEach((prop) => {
++      expoModuleProxy[prop] = constants[prop];
++    });
++  }
++
++  expoModuleProxy.addListener = addListener.bind(turboModule);
++
++  return expoModuleProxy;
++}
++
++// Another possile implementation, that does less work up front, but has more perf cost
++// on a per call basis.
++export function createTurboModuleToExpoProxyAlt(turboModule: TurboModule, name: string) {
++  if (!turboModule)
++    return null;
++
++  const constants = turboModule.getConstants ? turboModule.getConstants() : {};
++  return new Proxy(turboModule, {
++    get(target, prop) {
++      if (prop === "addListener") {
++        return addListener.bind(target);
++      }
++      if (constants[prop] !== undefined)
++        return constants[prop];
++      return target[prop];
++    },
++  });
++}
+diff --git a/node_modules/expo-modules-core/src/TurboModuleToExpoModuleProxy.ts b/node_modules/expo-modules-core/src/TurboModuleToExpoModuleProxy.ts
+new file mode 100644
+index 0000000..1e04e41
+--- /dev/null
++++ b/node_modules/expo-modules-core/src/TurboModuleToExpoModuleProxy.ts
+@@ -0,0 +1,6 @@
++// Copyright © 2024 650 Industries.
++import type { TurboModule } from 'react-native';
++
++export function createTurboModuleToExpoProxy(turboModule: TurboModule, name: string) {
++  return null;
++}
 diff --git a/node_modules/expo-modules-core/src/ensureNativeModulesAreInstalled.ts b/node_modules/expo-modules-core/src/ensureNativeModulesAreInstalled.ts
 index be4d3b2..bdcc93b 100644
 --- a/node_modules/expo-modules-core/src/ensureNativeModulesAreInstalled.ts
@@ -18,19 +93,21 @@ index be4d3b2..bdcc93b 100644
    } catch (error) {
      console.error(`Unable to install Expo modules: ${error}`);
 diff --git a/node_modules/expo-modules-core/src/requireNativeModule.ts b/node_modules/expo-modules-core/src/requireNativeModule.ts
-index 4aa412b..65a0d14 100644
+index 4aa412b..23bdaba 100644
 --- a/node_modules/expo-modules-core/src/requireNativeModule.ts
 +++ b/node_modules/expo-modules-core/src/requireNativeModule.ts
-@@ -1,4 +1,5 @@
+@@ -1,5 +1,7 @@
  import NativeModulesProxy from './NativeModulesProxy';
 +import { TurboModuleRegistry } from 'react-native';
  import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
++import { createTurboModuleToExpoProxy } from "./TurboModuleToExpoModuleProxy";
  
  /**
-@@ -31,5 +32,5 @@ export function requireOptionalNativeModule<ModuleType = any>(
+  * Imports the native module registered with given name. In the first place it tries to load
+@@ -31,5 +33,5 @@ export function requireOptionalNativeModule<ModuleType = any>(
  ): ModuleType | null {
    ensureNativeModulesAreInstalled();
  
 -  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
-+  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? TurboModuleRegistry.get(moduleName) ?? null;
++  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? createTurboModuleToExpoProxy(TurboModuleRegistry.get(moduleName), moduleName) ?? null;
  }
