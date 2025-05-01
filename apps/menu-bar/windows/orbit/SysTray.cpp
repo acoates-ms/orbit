@@ -152,24 +152,24 @@ struct SysTrayMenu : winrt::implements<SysTrayMenu, winrt::Windows::Foundation::
 			{
 				if (!pThis->m_appWindow)
 					return;
-				pThis->UpdateWindowPosition();
-				pThis->m_appWindow.Show(true);
+				if (pThis->UpdateWindowPosition())
+					pThis->m_appWindow.Show(true);
 			}
 		});
 	}
 
-	void UpdateWindowPosition()
+	bool UpdateWindowPosition()
 	{
 		auto rect = GetDesiredWindowRectForDpi(m_reactNativeIsland.Size());
-		if (rect.Width != 0 && rect.Height != 0)
-		{
-			auto hwnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_appWindow.Id());
-			RECT rc { rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height };
-			AdjustWindowRectEx(&rc, GetWindowLong(hwnd, GWL_STYLE), false, GetWindowLong(hwnd, GWL_EXSTYLE));
 
-			m_appWindow.MoveAndResize({ rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top });
-			SetWindowPos(winrt::Microsoft::UI::GetWindowFromWindowId(m_appWindow.Id()), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-		}
+		if (rect.Width == 0 || rect.Height == 0)
+			return false;
+		auto hwnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_appWindow.Id());
+		RECT rc { rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height };
+		AdjustWindowRectEx(&rc, GetWindowLong(hwnd, GWL_STYLE), false, GetWindowLong(hwnd, GWL_EXSTYLE));
+
+		m_appWindow.MoveAndResize({ rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top });
+		SetWindowPos(winrt::Microsoft::UI::GetWindowFromWindowId(m_appWindow.Id()), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	}
 
 	static bool IsColorLight(const winrt::Windows::UI::Color& clr) noexcept
