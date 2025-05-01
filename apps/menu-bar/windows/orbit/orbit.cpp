@@ -305,20 +305,6 @@ void UpdateRootViewSizeToAppWindow(
 	}
 }
 
-class ExpoModulesHostObject : public facebook::jsi::HostObject
-{
-	facebook::jsi::Value get(facebook::jsi::Runtime&, const facebook::jsi::PropNameID& name) override
-	{
-		return facebook::jsi::Value::undefined();
-	}
-
-	std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& rt) override
-	{
-		std::vector<facebook::jsi::PropNameID> result;
-		return result;
-	}
-};
-
 // Create and configure the ReactNativeHost
 winrt::Microsoft::ReactNative::ReactNativeHost CreateReactNativeHost(
 	const winrt::Microsoft::UI::Composition::Compositor& compositor)
@@ -368,27 +354,14 @@ winrt::Microsoft::ReactNative::ReactNativeHost CreateReactNativeHost(
 			args.Context(),
 			[](facebook::jsi::Runtime& runtime)
 		{
-			// Install fake expo modules object so that expo doesn't crap out
-			auto expoModules = std::make_shared<ExpoModulesHostObject>();
-			auto expoModulesObject = facebook::jsi::Object::createFromHostObject(
-				runtime,
-				expoModules
-			);
+			// Install empty expo object so that expo JS runs enough to allow expo modules to load using TurboModules
 			auto mainObject = std::make_shared<facebook::jsi::Object>(runtime);
-
 			auto global = runtime.global();
 			global.setProperty(
 				runtime,
 				"expo",
 				*mainObject
 			);
-
-			mainObject
-				->setProperty(
-					runtime,
-					"modules",
-					expoModulesObject
-				);
 		});
 	});
 
