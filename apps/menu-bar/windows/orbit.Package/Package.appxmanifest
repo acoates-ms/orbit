@@ -4,16 +4,17 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  IgnorableNamespaces="uap rescap desktop">
 
   <Identity
     Name="orbit"
-    Publisher="CN=acoates"
+    Publisher="CN=expo"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>orbit</DisplayName>
-    <PublisherDisplayName>acoates</PublisherDisplayName>
+    <DisplayName>Expo Orbit</DisplayName>
+    <PublisherDisplayName>Expo</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -47,6 +48,17 @@
             <uap:DisplayName>Expo Orbit URI Scheme</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
+
+        <desktop:Extension
+          Category="windows.startupTask"
+          Executable="$targetnametoken$.exe"
+          EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask
+            TaskId="ExpoOrbitStartupTask"
+            Enabled="false"
+            DisplayName="Expo Orbit" />
+        </desktop:Extension>
+
       </Extensions>
 
     </Application>

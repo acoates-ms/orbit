@@ -3,6 +3,8 @@
 #include "NativeModules.h"
 
 #include "Shlobj.h"
+#include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 #include <stdio.h>
 #include <string>
@@ -43,6 +45,9 @@ struct MenuBar
     REACT_INIT(Initialize);
     void Initialize(const winrt::Microsoft::ReactNative::ReactContext& reactContext) noexcept
     {
+        auto localSettings = winrt::Windows::Storage::ApplicationData::Current().LocalSettings();
+        auto envVarsContainer = localSettings.CreateContainer(L"EnvVars", winrt::Windows::Storage::ApplicationDataCreateDisposition::Always);
+        m_envVarsValues = envVarsContainer.Values();
         m_context = reactContext;
     }
 
@@ -80,20 +85,12 @@ struct MenuBar
     {
         try
         {
-            winrt::Windows::Foundation::Uri uri(L"shell:startup");
+            winrt::Windows::Foundation::Uri uri(L"ms-settings:startupapps");
 
-            if (co_await winrt::Windows::System::Launcher::LaunchUriAsync(uri))
-            {
-                OutputDebugStringA("MenuBar.openSystemSettingsLoginItems success");
-            }
-            else
-            {
-                OutputDebugStringA("MenuBar.openSystemSettingsLoginItems fail");
-            }
+            co_await winrt::Windows::System::Launcher::LaunchUriAsync(uri);
         }
         catch (winrt::hresult_error&)
         {
-            OutputDebugStringA("MenuBar.openSystemSettingsLoginItems throw");
         }
     }
 
@@ -159,6 +156,11 @@ struct MenuBar
         siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
         SetEnvironmentVariable(L"EXPO_MENU_BAR", L"1");
+
+        for (const auto& envVar : m_envVarsValues)
+        {
+            SetEnvironmentVariable(envVar.Key().c_str(), winrt::unbox_value<winrt::hstring>(envVar.Value()).c_str());
+        }
 
         bSuccess = CreateProcessA(NULL,
             const_cast<char*>(cmdLine.c_str()),     // command line 
@@ -253,14 +255,32 @@ struct MenuBar
     REACT_METHOD(runCommand)
         void runCommand(const std::string& command, std::vector<std::string>& args, winrt::Microsoft::ReactNative::ReactPromise<void> result) noexcept
     {
+        // This does not appear to have any active callers.
         result.Reject("NYI MenuBar.runCommand");
     }
 
     REACT_METHOD(setLoginItemEnabled)
-        void setLoginItemEnabled(bool enabled, winrt::Microsoft::ReactNative::ReactPromise<void> result) noexcept
+        winrt::fire_and_forget setLoginItemEnabled(bool enabled, winrt::Microsoft::ReactNative::ReactPromise<void> result) noexcept
     {
-        result.Reject("NYI MenuBar.setLoginItemEnabled");
-
+		try
+		{
+			// Task Id comes from appx manifest
+			auto startupTask = co_await winrt::Windows::ApplicationModel::StartupTask::GetAsync(L"ExpoOrbitStartupTask");
+			if (enabled)
+			{
+				co_await startupTask.RequestEnableAsync();
+                result.Resolve();
+			}
+			else
+			{
+				startupTask.Disable();
+				result.Resolve();
+			}
+		}
+		catch (winrt::hresult_error const& hrerror)
+		{
+			result.Reject(hrerror.message().c_str());
+		}
     }
 
     REACT_METHOD(showMultiOptionAlert)
@@ -283,17 +303,16 @@ struct MenuBar
     REACT_METHOD(setEnvVars)
         void setEnvVars(const winrt::Microsoft::ReactNative::JSValueObject& vars) noexcept
     {
-
-        //<homedir>/.expo/orbit/auth.json
-        /*
-        for (auto& p : vars)
+        m_envVarsValues.Clear();
+        for(auto& v : vars)
         {
-
-            p.first
+            winrt::Windows::Foundation::IInspectable value { nullptr };
+            assert(v.second.Type() == winrt::Microsoft::ReactNative::JSValueType::String);
+            m_envVarsValues.Insert(winrt::to_hstring(v.first), winrt::box_value(winrt::to_hstring(v.second.AsString())));
         }
-        */
     }
 
 private:
     winrt::Microsoft::ReactNative::ReactContext m_context;
+    winrt::Windows::Foundation::Collections::IPropertySet m_envVarsValues;
 };
