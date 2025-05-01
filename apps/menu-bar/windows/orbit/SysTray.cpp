@@ -100,6 +100,11 @@ struct SysTrayMenu : winrt::implements<SysTrayMenu, winrt::Windows::Foundation::
 
 	void OnLightDismissDismissed(const winrt::Microsoft::UI::Input::InputLightDismissAction&, const winrt::Microsoft::UI::Input::InputLightDismissEventArgs&)
 	{
+		Dismiss();
+	}
+
+	void Dismiss() noexcept
+	{
 		m_appWindow.Hide();
 	}
 
@@ -455,4 +460,13 @@ void ShutdownSysTray(const winrt::Microsoft::ReactNative::ReactContext& reactCon
 	{
 		DestroyWindow(*optHwnd);
 	}
+}
+
+void ShowSysTrayWindow(const winrt::Microsoft::ReactNative::ReactContext& reactContext) noexcept {
+	auto host = winrt::Microsoft::ReactNative::ReactNativeHost::FromContext(reactContext.Handle());
+	SysTrayMenu::Instance().ShowPopup({ 10000,10000 }, host);
+}
+
+void DismissSysTrayWindow() noexcept {
+	SysTrayMenu::Instance().Dismiss();
 }

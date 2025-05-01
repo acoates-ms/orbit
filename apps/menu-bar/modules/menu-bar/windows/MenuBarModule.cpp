@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string>
 #include <sstream>
+#include "..\..\..\windows\orbit\SysTray.h"
 
 REACT_STRUCT(Size)
 struct Size
@@ -292,12 +293,13 @@ struct MenuBar
     REACT_METHOD(openPopover)
         void openPopover() noexcept
     {
-
+        ShowSysTrayWindow(m_context);
     }
 
     REACT_METHOD(closePopover)
         void closePopover() noexcept
     {
+        DismissSysTrayWindow();
     }
 
     REACT_METHOD(setEnvVars)

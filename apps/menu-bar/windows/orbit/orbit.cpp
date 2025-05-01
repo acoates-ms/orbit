@@ -17,6 +17,7 @@
 #include "SysTray.h"
 
 #include <winrt/Microsoft.UI.interop.h>
+#include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Microsoft.Security.Authentication.OAuth.h>
 #include <winrt/Windows.Storage.h>
@@ -220,6 +221,12 @@ struct WindowsManager : std::enable_shared_from_this<WindowsManager>
 				bridge.Connect(appContent);
 				auto host = winrt::Microsoft::ReactNative::ReactNativeHost::FromContext(strongThis->m_context.Handle());
 				reactNativeIsland.ReactViewHost(winrt::Microsoft::ReactNative::ReactCoreInjection::MakeViewHost(host, viewOptions));
+
+				auto focusController = winrt::Microsoft::UI::Input::InputFocusController::GetForIsland(reactNativeIsland.Island());
+				focusController.GotFocus([context = strongThis->m_context, window](const auto& sender, const winrt::Microsoft::UI::Input::FocusChangedEventArgs& args)
+				{
+					context.EmitJSEvent(L"RCTDeviceEventEmitter", L"windowFocused", window);
+				});
 
 				bridge.Show();
 				appWindow.Show();
